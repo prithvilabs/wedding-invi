@@ -5,8 +5,8 @@ import { useReducedMotion } from '../../hooks/useReducedMotion';
 type Props = {
   count?: number;
   seed?: number;
-  /** Warm petals for lamplit scenes, cool for evening ones. */
-  tone?: 'ivory' | 'blue';
+  /** Jasmine for lamplit scenes, marigold for the celebratory ones. */
+  tone?: 'jasmine' | 'marigold';
   className?: string;
 };
 
@@ -16,19 +16,19 @@ type Props = {
  * Each is a single composited element on a CSS keyframe, so the
  * whole effect costs nothing per frame on the main thread.
  */
-function PetalsBase({ count = 12, seed = 21, tone = 'ivory', className = '' }: Props) {
+function PetalsBase({ count = 12, seed = 21, tone = 'jasmine', className = '' }: Props) {
   const reduced = useReducedMotion();
 
   const petals = useMemo(() => {
     const rand = seeded(seed);
     return Array.from({ length: count }, () => ({
       left: rand() * 100,
-      size: 9 + rand() * 13,
+      size: 6 + rand() * 8,
       duration: 17 + rand() * 20,
       delay: -rand() * 34,
       drift: (rand() - 0.5) * 180,
       spin: 180 + rand() * 540,
-      opacity: 0.35 + rand() * 0.45,
+      opacity: 0.22 + rand() * 0.3,
     }));
   }, [count, seed]);
 

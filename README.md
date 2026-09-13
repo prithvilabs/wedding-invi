@@ -1,152 +1,162 @@
-# Prithvi Raj & Harshini
+# Prithvi Raj & Harshini — 28 January 2027
 
-A cinematic digital wedding invitation — one continuous camera move through a
-blue-and-ivory South Indian mandapam, controlled by scrolling.
+A digital wedding invitation for a South Indian Tamil Hindu wedding,
+built as one continuous move from a doorway at night to the last page
+of a printed card.
 
-**Wedding** · 28 January 2027
-**Reception** · 7 February 2027 · Anand Grand Palace, Hosur
-
-```bash
-npm install
-npm run dev       # local development
-npm run build     # production build into dist/
-npm run preview   # serve the production build
 ```
+npm install
+npm run dev        # http://localhost:5173
+npm run build      # → dist/
+npm run typecheck
+```
+
+React 18 + Vite + TypeScript. No UI framework, no animation library —
+the motion is CSS transforms driven by one scroll loop.
 
 ---
 
-## Changing the content
+## The one rule this design follows
 
-**You should not need to touch a component to change what the site says.**
-All copy, dates, names and placeholders live in two files:
+**Traditional objects are suggested through their effect on the
+environment, never drawn as ornament.**
+
+There is no kuthu vilakku on this site. There is no gopuram, no
+thoranam, no brass lamp, no temple SVG. What there is instead is what
+those things *do*: a warm pool of light falling from low in the frame
+with a bounce off the floor in front of it, a slow unsteadiness in that
+light because an oil flame is never quite still, Kanchipuram silk as a
+woven surface with a sheen drifting across it, paper grain under every
+flat colour, and an atmosphere whose colour changes room by room as
+you descend.
+
+The one exception is the kolam, and it earns the exception because a
+kolam *is* a drawing — made of line, at a threshold, by hand. It draws
+itself on, stroke by stroke, rather than fading in.
+
+If you are adding something to this site, apply the same test: would a
+photograph of the real wedding contain this object as a graphic, or
+would it contain the light and the material the object produces? Build
+the second thing.
+
+## Where the content lives
+
+Everything a family member would want to change is in **`src/data/wedding.ts`**
+and **`src/data/gallery.ts`**. No component hardcodes a name, a date, a
+venue or a message. Placeholders say so in the text — replace the
+words, not the shape.
 
 | What | Where |
-| --- | --- |
-| Names, dates, venue, story, families, travel, RSVP, music | `src/data/wedding.ts` |
-| Gallery photographs | `src/data/gallery.ts` |
+|---|---|
+| Names, the hero line, the monogram | `couple` |
+| The opening film's lines and button | `opening` |
+| The muhurtham date, used by the countdown and every calendar file | `wedding` |
+| All four events, with venues, times and map queries | `weddingEvents` |
+| Portraits and biographies | `people` |
+| The six story chapters | `story` |
+| The first messages | `firstMessages` |
+| Elders' names | `families` |
+| Travel notes | `travel` |
+| Wishes already received | `wishes` |
+| RSVP destination | `rsvpConfig` |
+| Photographs | `src/data/gallery.ts` |
 
-### Placeholders
+### Photographs
 
-Details that are not confirmed are written as explicit placeholders, not as
-invented content. Replace the text and the layout absorbs it — nothing needs
-redesigning.
-
-- `events.wedding.detailsPlaceholder` — currently **"Wedding details to follow"**.
-  Leave this exactly as it is until the family confirms the ceremony details.
-- `events.reception.detailsPlaceholder` — reception timings.
-- `families[].names` — empty. Add the elders' names as an array of strings and
-  the "family names to follow" line disappears on its own. Two to four names a
-  side keeps the symmetry.
-- `travel[]` — add, remove or rewrite entries freely; the section renders
-  however many it is given.
-- `rsvp` — see below.
-
-### Adding photographs
-
-Put image files in `public/gallery/`, then point each entry in
-`src/data/gallery.ts` at one:
-
-```ts
-{ id: 'g1', src: '/gallery/mehendi.jpg', alt: 'Prithvi Raj and Harshini at the mehendi', span: 'tall', tilt: -2.5, depth: 0.75 }
-```
-
-- `span` — `wide`, `tall` or `small`; drives the editorial rhythm of the album.
-- `tilt` — −4…4 degrees, so the album looks hand-laid rather than gridded.
-- `depth` — 0…1, how far the plate drifts against the scroll.
-- `alt` — please write a real description; it is read aloud to visitors using
-  a screen reader.
-
-An entry with `src: null` renders as an empty album plate. That is deliberate,
-not a broken image. While every plate is empty, one note reads "Photographs to
-follow" beneath the album.
+Put files in `public/` and point `src` at them (e.g. `'./gallery/first-photo.jpg'`).
+With `src: null` a frame renders as an empty album plate — a deliberate
+placeholder, not a broken image. **Every plate reserves its space by
+aspect ratio before the file loads**, so adding photographs never
+shifts the page.
 
 ### Music
 
-Music **never autoplays** and nothing is downloaded until a visitor presses
-play. To add a track, drop a file in `public/music/` and set:
+Drop the file at `public/song.mp3`. It never autoplays: it begins only
+after the invitation has been opened by hand, and the audio element is
+not constructed until then, so a visitor who never opens the
+invitation never downloads it. Set `music.src` to `null` to remove the
+control entirely.
 
-```ts
-export const music = { src: '/music/nadaswaram.mp3', title: 'Nadaswaram' };
-```
+### The opening film
 
-With `src: null` the control hides itself entirely.
+By default the opening is played as light — five seconds of a dark room
+becoming a lit one. To use a real five-second film instead, put it at
+`public/film/opening.mp4` and set `opening.videoSrc` to
+`'./film/opening.mp4'`. The lines and the button stay as they are.
 
-### RSVP
+## Wiring up the RSVP
 
-The RSVP section is intentionally inert: there is no form, because there is
-nothing to submit to yet, and no fake confirmation. When a real endpoint
-exists, replace the `finale__rsvp-status` line in
-`src/components/sections/Finale.tsx` with the form component. The surrounding
-section is already sized and styled for it — no other part of the page moves.
+Out of the box the reply composes itself and opens WhatsApp, so the
+button always does something. To send replies to a Google Sheet
+instead:
 
----
+1. Build a Google Form with the seven fields (first name, last name,
+   email, guests, events attending, meal, message).
+2. Open the live form, View Source, and search for `entry.` — each
+   field has an id like `entry.1234567890`.
+3. Put the form id and those seven ids into `rsvpConfig` in
+   `src/data/wedding.ts`.
 
-## How the site is built
+The form then posts into a hidden iframe, so a guest who replies stays
+on the invitation instead of being thrown onto a Google confirmation
+page.
 
-### The venue comes first
+Also in `rsvpConfig`: `whatsappNumber` (international format, no `+` or
+spaces) for the WhatsApp fallback and the wishes box.
 
-The design system and the environment were built before any section. Sections
-are placed *inside* the venue rather than decorated afterwards, which is why
-scenes flow into one another instead of stacking as cards.
+## How the motion works
 
-Everything physical in the site — pillars, garlands, lamps, arches, kolam,
-gopuram, thoranam, flowers — is **procedural SVG**, not images. There are no
-decorative PNGs to load, the environment is crisp at any screen size, and the
-whole page weighs well under 100 kB gzipped.
+**One scroll listener and one rAF tick for the whole document**
+(`src/hooks/scrollEngine.ts`), and zero layout reads inside the frame
+loop. Element positions are measured once, cached, and recomputed only
+when layout can actually have changed — on resize, on font load, and
+when a `content-visibility` subtree starts rendering. Measuring inside
+the loop while sibling layers write transforms forces a reflow per
+layer per frame, which is what judder actually is.
 
-### Design tokens
+Everything animated moves `transform` and `opacity` only. Nothing
+animates `width`, `height`, `top` or `left`.
 
-`src/styles/tokens.css` holds every colour, type step, space, duration, easing
-curve, shadow and layer. Nothing else in the project restates a visual value.
-Changing the palette, the type scale or the pace of the whole film happens in
-that one file.
+Three hooks sit on the engine:
 
-### The camera
+- `useReveal` — viewport arrival. The revealed state is a **class, not a
+  running animation**, so a visitor who flings past a section lands on
+  the finished composition instead of catching it mid-flight.
+- `useParallax` — writes one transform per element per frame, skips
+  off-screen layers entirely, and skips sub-pixel writes.
+- `useSceneProgress` — publishes a scene's own progress as
+  `--scene-progress` so CSS can drive lighting from it without React
+  rendering.
 
-- `src/hooks/scrollEngine.ts` — **one** scroll listener and **one** rAF tick
-  for the entire site. Every parallax layer, the colour grade and the
-  navigation share it, so adding a depth plane costs a transform write rather
-  than another listener.
-- `useParallax` — attaches an element to that engine and writes its transform
-  directly. React never re-renders on scroll.
-- `useSceneProgress` — publishes a scene's own progress as `--scene-progress`,
-  which CSS uses to drive lighting and to draw the India ↔ USA line of light
-  exactly as far as the visitor has travelled.
-- `useReveal` — viewport activation. The revealed state is a *class*, not a
-  running animation, so scrolling past at speed lands on the finished
-  composition rather than catching it mid-flight. Nothing is ever left
-  half-arrived.
-
-### Lighting
-
-`src/components/layout/Atmosphere.tsx` interpolates a three-colour grade from
-the visitor's position in the document and lays it over the page as a
-soft-light wash. It grades what is already there rather than painting the site
-blue — the difference between a venue lit in blue and a blue website.
-
-### Scenes and bridges
-
-`src/App.tsx` reads top to bottom as the shot list. No two scenes are
-adjacent: every pair is joined by a `SceneBridge` that blends the colour of one
-room into the next while the camera passes through some piece of the place — a
-tower, a doorway, a curtain of jasmine, a threshold kolam.
-
-Scenes taller than the screen put their architecture on a `stage` (a sticky,
-viewport-high frame), so the room stays around the visitor instead of hanging
-its ceiling above them and standing its lamps below them.
-
----
+Durations come from four registers in `tokens.css` and every animation
+belongs to exactly one: `--d-instant` (buttons), `--d-quick` (cards),
+`--d-base`/`--d-slow` (section reveals), `--d-cinematic` (the opening),
+`--d-ambient` (light and drift).
 
 ## Accessibility
 
-- Semantic landmarks, a heading per scene, and a skip link as the first tab stop.
-- Every decorative layer is `aria-hidden` and inert to pointers.
-- `prefers-reduced-motion` stills the camera but keeps the whole composition —
-  nothing is hidden and nothing is restyled.
-- Visible focus rings, accessible names on both controls, real `<time>`
-  elements for both dates.
+- `prefers-reduced-motion` stills the camera without taking away a
+  single composition: reveals land in their final state, the kolam is
+  shown complete rather than drawn, the light holds steady instead of
+  breathing, and petals are simply not shed.
+- Every label is visible; no placeholder is used as a label.
+- Form errors sit with the field they belong to and clear as soon as
+  the field is corrected.
+- Every control is at least 48px on its smallest axis.
+- The countdown's ticking figures stay out of the accessibility tree;
+  a single polite live region carries the meaning instead.
+- Focus is visible everywhere, and the opening film puts focus on its
+  one button so a keyboard visitor opens the invitation with one press.
 
-## Browser support
+## Fonts
 
-Modern evergreen browsers. The site uses `color-mix()`, `clamp()`, container-free
-fluid type and CSS nesting-free plain selectors; no polyfills are needed.
+Great Vibes, Cormorant Garamond and Jost are **self-hosted** from
+`src/styles/fonts/` (latin and latin-ext subsets only, ~316KB total).
+There is no request to Google on the critical path, and therefore no
+flash of fallback type.
+
+## Deploying
+
+`npm run build` emits `dist/` with relative asset URLs, so it works
+from a domain root or any subpath — GitHub Pages, Netlify, Vercel,
+S3, or a folder on a web host.

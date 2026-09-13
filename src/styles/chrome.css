@@ -1,161 +1,361 @@
 /* =============================================================
    CHROME
-   Navigation, music, the scroll cue and the footer — the few
-   pieces of interface allowed into the venue. All of it stays
-   quiet enough to be ignored.
+   The opening film, navigation, music, and every reusable piece
+   of furniture: titles, plates, cards, buttons, fields.
    ============================================================= */
+
+/* ---------- The opening film ----------
+   Five seconds of a dark room becoming a lit one. Nothing is drawn:
+   there is no lamp on this screen, only what a lamp does to a room. */
+
+.opening {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-overlay);
+  display: grid;
+  place-items: center;
+  background: var(--c-night);
+  overflow: hidden;
+  transition: opacity var(--d-slow) var(--e-soft);
+}
+
+.opening.is-leaving {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.opening__room { position: absolute; inset: 0; }
+
+.opening__film {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* The surface the light is falling on: warm stone, darkest at the
+   edges, with the faintest suggestion of carving. The carving is a
+   gradient, not a drawing — at this light level that is all a real
+   wall would give you anyway. */
+.opening__wall {
+  position: absolute;
+  inset: 0;
+  background:
+    repeating-linear-gradient(
+      104deg,
+      color-mix(in srgb, var(--c-night-warm) 40%, transparent) 0 2px,
+      transparent 2px 26px
+    ),
+    radial-gradient(ellipse 120% 90% at 50% 120%, color-mix(in srgb, var(--c-night-soft) 90%, transparent), transparent 70%);
+  opacity: 0;
+  transition: opacity 2600ms var(--e-soft);
+}
+
+.opening.beat-1 .opening__wall,
+.opening.beat-2 .opening__wall,
+.opening.beat-3 .opening__wall,
+.opening.beat-4 .opening__wall,
+.opening.beat-5 .opening__wall,
+.opening.beat-6 .opening__wall { opacity: 0.55; }
+
+.opening__kolam {
+  position: absolute;
+  left: 50%;
+  bottom: -14%;
+  translate: -50% 0;
+  width: min(300px, 72vw);
+  height: auto;
+  aspect-ratio: 1;
+  color: var(--c-flame);
+  opacity: 0.3;
+  /* Seen at a shallow angle, on the floor. */
+  transform: perspective(700px) rotateX(64deg);
+}
+
+/* The light itself comes up over the first two seconds. */
+.opening .lamplight {
+  opacity: 0;
+  transition: opacity 2400ms var(--e-soft);
+}
+
+.opening.beat-1 .lamplight,
+.opening.beat-2 .lamplight,
+.opening.beat-3 .lamplight,
+.opening.beat-4 .lamplight,
+.opening.beat-5 .lamplight,
+.opening.beat-6 .lamplight { opacity: 1; }
+
+/* A hairline brass frame, inset — the border of a printed card, and
+   the only ornament in the film. It opens outward as the light rises. */
+.opening__frame {
+  position: absolute;
+  inset: clamp(0.9rem, 3.2vw, 2.6rem);
+  pointer-events: none;
+}
+
+.opening__frame-edge {
+  position: absolute;
+  inset: 0;
+  border: 1px solid color-mix(in srgb, var(--c-brass-light) 42%, transparent);
+  opacity: 0;
+  transform: scale(1.06);
+  transition: opacity 1800ms var(--e-soft) 300ms, transform 1800ms var(--e-soft) 300ms;
+}
+
+.opening.beat-1 .opening__frame-edge,
+.opening.beat-2 .opening__frame-edge,
+.opening.beat-3 .opening__frame-edge,
+.opening.beat-4 .opening__frame-edge,
+.opening.beat-5 .opening__frame-edge,
+.opening.beat-6 .opening__frame-edge { opacity: 1; transform: none; }
+
+.opening__content {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  justify-items: center;
+  gap: clamp(1.6rem, 5vh, 3.4rem);
+  text-align: center;
+  padding-inline: var(--sp-gutter);
+}
+
+.opening__lines { display: grid; gap: clamp(0.4rem, 1.4vh, 1rem); }
+
+.opening__line {
+  font-size: clamp(1.3rem, 0.9rem + 2.2vw, 2.7rem);
+  line-height: 1.4;
+  color: var(--c-flame-core);
+  opacity: 0;
+  transform: translate3d(0, 16px, 0);
+  filter: blur(6px);
+  transition:
+    opacity var(--d-slow) var(--e-soft),
+    transform var(--d-slow) var(--e-soft),
+    filter var(--d-slow) var(--e-soft);
+}
+
+.opening__line.is-in { opacity: 1; transform: none; filter: none; }
+
+.opening__date {
+  margin-block-start: clamp(0.6rem, 2vh, 1.4rem);
+  color: var(--c-brass-light);
+  opacity: 0;
+  transform: translate3d(0, 10px, 0);
+  transition: opacity var(--d-slow) var(--e-out), transform var(--d-slow) var(--e-out);
+}
+
+.opening__date.is-in { opacity: 1; transform: none; }
+
+/* The button is brass: a warm face on dark, with a light that
+   sweeps across it the way light moves on metal when it is turned. */
+.opening__cta {
+  position: relative;
+  overflow: hidden;
+  padding: clamp(0.85rem, 2vw, 1.1rem) clamp(1.8rem, 5vw, 3rem);
+  /* 44px minimum on every axis, at every width. */
+  min-height: 48px;
+  border: 1px solid color-mix(in srgb, var(--c-brass-light) 62%, transparent);
+  border-radius: var(--r-pill);
+  background: color-mix(in srgb, var(--c-flame) 9%, transparent);
+  color: var(--c-flame-core);
+  font-family: var(--f-sans);
+  font-size: var(--t-label);
+  letter-spacing: var(--ls-label);
+  text-indent: var(--ls-label);
+  text-transform: uppercase;
+  cursor: pointer;
+  transition:
+    background var(--d-instant) var(--e-out),
+    border-color var(--d-instant) var(--e-out),
+    transform var(--d-instant) var(--e-out),
+    box-shadow var(--d-instant) var(--e-out);
+}
+
+.opening__cta:hover,
+.opening__cta:focus-visible {
+  background: color-mix(in srgb, var(--c-flame) 18%, transparent);
+  border-color: var(--c-brass-light);
+  box-shadow: var(--sh-lamp);
+}
+
+/* The press is a real press — the button goes down, not up. */
+.opening__cta:active { transform: translateY(1px) scale(0.985); }
+
+.opening__cta-face { position: relative; z-index: 1; }
+
+.opening__cta-sweep {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    100deg,
+    transparent 36%,
+    color-mix(in srgb, var(--c-flame-core) 30%, transparent) 50%,
+    transparent 64%
+  );
+  transform: translate3d(-120%, 0, 0);
+}
+
+.opening__cta:hover .opening__cta-sweep,
+.opening__cta:focus-visible .opening__cta-sweep {
+  animation: sweep 1100ms var(--e-out);
+}
+
+@keyframes sweep {
+  to { transform: translate3d(120%, 0, 0); }
+}
+
+/* The warm flood that fills the frame as the invitation opens —
+   the last thing seen before the hero. */
+.opening__flood {
+  position: absolute;
+  left: 14%;
+  bottom: 0;
+  width: 10vmax;
+  aspect-ratio: 1;
+  translate: -50% 50%;
+  border-radius: 50%;
+  background: radial-gradient(circle, var(--c-flame-core) 0%, var(--c-flame) 42%, transparent 72%);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.opening.is-leaving .opening__flood {
+  animation: flood 1400ms var(--e-soft) forwards;
+}
+
+@keyframes flood {
+  0%   { opacity: 0;    transform: scale(0.4); }
+  36%  { opacity: 0.92; }
+  100% { opacity: 0;    transform: scale(11); }
+}
 
 /* ---------- Navigation ---------- */
 
 .nav {
   position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
+  inset-block-start: 0;
+  inset-inline: 0;
   z-index: var(--z-chrome);
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: var(--sp-md);
-  padding: clamp(1rem, 2.4vh, 2rem) var(--sp-gutter);
-  transition:
-    background-color var(--d-base) var(--e-out),
-    backdrop-filter var(--d-base) var(--e-out),
-    border-color var(--d-base) var(--e-out),
-    padding var(--d-base) var(--e-out);
-  border-bottom: 1px solid transparent;
+  padding: clamp(0.7rem, 2vw, 1.2rem) var(--sp-gutter);
+  padding-block-start: max(clamp(0.7rem, 2vw, 1.2rem), env(safe-area-inset-top));
+  color: var(--s-ink);
+  transition: background var(--d-quick) var(--e-out), box-shadow var(--d-quick) var(--e-out);
 }
 
-/* Over the hero the links cross carved stone and jasmine. A soft
-   fall of shade from the top of the frame — the kind any ceiling
-   casts — keeps them readable without giving the navigation a bar
-   of its own. */
-.nav::before {
-  content: '';
-  position: absolute;
-  inset: -1px 0 auto;
-  height: 220%;
-  z-index: -1;
-  background: linear-gradient(
-    to bottom,
-    color-mix(in srgb, var(--c-navy-deep) 46%, transparent),
-    transparent
-  );
-  pointer-events: none;
-  transition: opacity var(--d-base) var(--e-out);
-}
-
-.nav.is-lifted::before { opacity: 0; }
-
-/* Over the hero the navigation has no ground at all. It only takes
-   on glass once the visitor has left the entrance. */
 .nav.is-lifted {
-  background: color-mix(in srgb, var(--c-ivory) 72%, transparent);
-  backdrop-filter: blur(14px) saturate(1.1);
-  border-bottom-color: color-mix(in srgb, var(--c-sand) 45%, transparent);
-  padding-block: clamp(0.7rem, 1.6vh, 1.2rem);
+  background: color-mix(in srgb, var(--c-ivory) 86%, transparent);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 1px 0 var(--s-rule-soft);
 }
 
 .nav__mark {
-  font-size: clamp(1.05rem, 0.95rem + 0.5vw, 1.5rem);
-  letter-spacing: 0.24em;
-  color: var(--c-ivory);
-  text-shadow: 0 1px 20px color-mix(in srgb, var(--c-navy-deep) 60%, transparent);
-  transition: color var(--d-base) var(--e-out), text-shadow var(--d-base) var(--e-out);
+  display: grid;
+  align-content: center;
+  /* The monogram is a link home; it needs a real target, not just
+     the height of its own glyphs. */
+  min-height: 44px;
+  padding-inline: var(--sp-xs);
+  margin-inline-start: calc(var(--sp-xs) * -1);
+  font-size: var(--t-lead);
+  letter-spacing: 0.08em;
+  color: var(--c-maroon);
 }
 
-.nav.is-lifted .nav__mark {
-  color: var(--c-navy);
-  text-shadow: none;
+.nav__progress {
+  position: absolute;
+  inset-block-end: 0;
+  inset-inline: 0;
+  height: 1px;
+  background: var(--c-brass);
+  transform: scaleX(0);
+  transform-origin: 0 50%;
+  opacity: 0.5;
 }
 
 .nav__list {
-  list-style: none;
-  margin: 0;
-  padding: 0;
   display: flex;
   align-items: center;
-  gap: clamp(1rem, 2.4vw, 2.4rem);
+  gap: clamp(0.9rem, 2.4vw, 2.2rem);
+  margin: 0;
+  padding: 0;
+  list-style: none;
 }
 
 .nav__link {
   position: relative;
-  color: var(--s-on-dark-soft);
-  font-size: var(--t-eyebrow);
-  letter-spacing: var(--ls-nav);
-  padding-block: var(--sp-2xs);
-  transition: color var(--d-quick) var(--e-out);
+  display: block;
+  padding: var(--sp-xs) var(--sp-2xs);
+  color: var(--s-ink-soft);
+  transition: color var(--d-instant) var(--e-out);
 }
 
-.nav.is-lifted .nav__link { color: var(--s-ink-soft); }
-
+/* The underline grows from the centre and stays for the active
+   section — the only state this navigation has. */
 .nav__link::after {
   content: '';
   position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  inset-inline: var(--sp-2xs);
+  inset-block-end: 2px;
   height: 1px;
-  background: currentColor;
-  scale: 0 1;
-  transform-origin: left;
-  transition: scale var(--d-quick) var(--e-out);
+  background: var(--c-brass);
+  transform: scaleX(0);
+  transform-origin: 50% 50%;
+  transition: transform var(--d-instant) var(--e-out);
 }
 
 .nav__link:hover,
-.nav__link.is-active {
-  color: var(--c-gold-soft);
-}
-
-.nav.is-lifted .nav__link:hover,
-.nav.is-lifted .nav__link.is-active {
-  color: var(--c-gold-deep);
-}
+.nav__link:focus-visible,
+.nav__link.is-active { color: var(--c-maroon); }
 
 .nav__link:hover::after,
-.nav__link.is-active::after { scale: 1 1; }
+.nav__link:focus-visible::after,
+.nav__link.is-active::after { transform: scaleX(1); }
 
-.nav__toggle {
-  display: none;
-  width: 44px;
-  height: 44px;
-  place-items: center;
-  margin-right: -10px;
-}
+.nav__toggle { display: none; }
 
+/* Two hairlines that cross into a mark, rather than a burger that
+   morphs into an X — the latter belongs to a different kind of site. */
 .nav__bars {
   display: grid;
-  gap: 6px;
-  width: 24px;
+  gap: 5px;
+  width: 22px;
 }
 
 .nav__bars span {
   display: block;
   height: 1px;
-  background: var(--c-ivory);
-  transition: background-color var(--d-base) var(--e-out), translate var(--d-quick) var(--e-out), rotate var(--d-quick) var(--e-out);
+  background: currentColor;
+  transition: transform var(--d-instant) var(--e-out), opacity var(--d-instant) var(--e-out);
 }
 
-.nav.is-lifted .nav__bars span { background: var(--c-navy); }
-.nav.is-open .nav__bars span { background: var(--c-navy); }
-.nav.is-open .nav__bars span:first-child { translate: 0 3.5px; rotate: 45deg; }
-.nav.is-open .nav__bars span:last-child { translate: 0 -3.5px; rotate: -45deg; }
+@media (max-width: 767px) {
+  .nav__toggle {
+    display: grid;
+    place-items: center;
+    width: 48px;
+    height: 48px;
+    margin-inline-end: -0.6rem;
+    color: var(--c-maroon);
+  }
 
-@media (max-width: 899px) {
-  .nav__toggle { display: grid; }
+  .nav.is-open .nav__bars span:first-child { transform: translateY(3px) rotate(45deg); }
+  .nav.is-open .nav__bars span:last-child  { transform: translateY(-3px) rotate(-45deg); }
 
   .nav__menu {
     position: fixed;
     inset: 0;
-    background: color-mix(in srgb, var(--c-ivory) 96%, transparent);
-    backdrop-filter: blur(20px);
     display: grid;
     place-items: center;
+    background: color-mix(in srgb, var(--c-ivory) 97%, transparent);
+    backdrop-filter: blur(14px);
     opacity: 0;
     visibility: hidden;
-    transition:
-      opacity var(--d-base) var(--e-out),
-      visibility var(--d-base) var(--e-out);
+    transition: opacity var(--d-quick) var(--e-out), visibility var(--d-quick);
   }
 
   .nav.is-open .nav__menu { opacity: 1; visibility: visible; }
@@ -166,282 +366,650 @@
     text-align: center;
   }
 
-  .nav__link,
-  .nav.is-lifted .nav__link {
-    color: var(--c-navy);
-    font-size: var(--t-label);
-    letter-spacing: 0.3em;
+  .nav__link {
+    font-size: var(--t-lead);
+    padding: var(--sp-sm) var(--sp-md);
+    min-height: 48px;
   }
-}
-
-/* How far through the invitation the visitor has come. One hairline,
-   the width of the frame — enough to make a long scroll feel finite. */
-.nav__progress {
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: -1px;
-  height: 1px;
-  background: linear-gradient(to right, var(--c-gold-deep), var(--c-gold-soft));
-  transform: scaleX(0);
-  transform-origin: left;
-  opacity: 0;
-  transition: opacity var(--d-base) var(--e-out);
-}
-
-.nav.is-lifted .nav__progress { opacity: 0.9; }
-
-/* ---------- Scroll cue ---------- */
-
-/* The cue sits low in the hero, where the light has already turned
-   to ivory — so it is inked, not lifted. */
-.scene--entrance .scroll-cue { color: var(--s-ink-soft); }
-
-.scroll-cue {
-  display: grid;
-  justify-items: center;
-  gap: var(--sp-sm);
-  margin-top: clamp(1.5rem, 5vh, 4rem);
-  color: var(--s-on-dark-faint);
-  transition: opacity var(--d-base) var(--e-out), translate var(--d-base) var(--e-out);
-}
-
-.scroll-cue.is-gone { opacity: 0 !important; }
-
-.scroll-cue__word { font-size: 0.6rem; }
-
-.scroll-cue__line {
-  display: block;
-  width: 1px;
-  height: clamp(34px, 6vh, 60px);
-  background: linear-gradient(to bottom, var(--c-gold-deep), transparent);
-  transform-origin: top;
-  animation: cue-draw 2.8s var(--e-inout) infinite;
-}
-
-@keyframes cue-draw {
-  0% { scale: 1 0.2; opacity: 0.2; }
-  45% { scale: 1 1; opacity: 1; }
-  100% { scale: 1 1; opacity: 0; }
 }
 
 /* ---------- Music ---------- */
 
 .music {
   position: fixed;
-  right: var(--sp-gutter);
-  bottom: clamp(1rem, 3vh, 2.2rem);
+  inset-block-end: max(var(--sp-md), env(safe-area-inset-bottom));
+  inset-inline-end: var(--sp-md);
   z-index: var(--z-chrome);
-  display: flex;
-  align-items: center;
-  gap: var(--sp-xs);
-  padding: 0.55rem 1rem;
-  border: 1px solid color-mix(in srgb, var(--c-gold) 40%, transparent);
-  border-radius: var(--r-pill);
-  background: color-mix(in srgb, var(--c-ivory) 70%, transparent);
-  backdrop-filter: blur(12px);
-  color: var(--c-navy);
-  transition: border-color var(--d-quick) var(--e-out), background-color var(--d-quick) var(--e-out);
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: 1px solid var(--s-rule);
+  background: color-mix(in srgb, var(--c-ivory) 88%, transparent);
+  backdrop-filter: blur(8px);
+  color: var(--c-brass-deep);
+  box-shadow: var(--sh-card);
+  transition: transform var(--d-instant) var(--e-out), border-color var(--d-instant) var(--e-out);
 }
 
-.music:hover { border-color: var(--c-gold); }
+.music:hover,
+.music:focus-visible { transform: scale(1.06); border-color: var(--c-brass); }
+.music:active { transform: scale(0.96); }
 
 .music__bars {
   display: flex;
   align-items: flex-end;
   gap: 2px;
-  height: 12px;
+  height: 14px;
 }
 
+/* At rest these are four graduated strokes — a small brass mark that
+   reads as music. Flat dots read as an ellipsis. */
 .music__bars span {
-  width: 2px;
-  height: 3px;
-  background: var(--c-gold-deep);
+  width: 1.5px;
+  background: currentColor;
+  border-radius: 1px;
+  transform-origin: 50% 100%;
   transition: height var(--d-quick) var(--e-out);
 }
 
+.music__bars span:nth-child(1) { height: 6px; }
+.music__bars span:nth-child(2) { height: 11px; }
+.music__bars span:nth-child(3) { height: 8px; }
+.music__bars span:nth-child(4) { height: 13px; }
+
+/* Playing, they all start from the same low stroke and are animated. */
+.music.is-playing .music__bars span { height: 3px; }
+
 .music.is-playing .music__bars span {
-  animation: music-bounce 1.1s var(--e-inout) infinite alternate;
+  animation: music-bar 1100ms var(--e-inout) infinite alternate;
 }
 
-.music.is-playing .music__bars span:nth-child(2) { animation-delay: 0.16s; }
-.music.is-playing .music__bars span:nth-child(3) { animation-delay: 0.32s; }
-.music.is-playing .music__bars span:nth-child(4) { animation-delay: 0.48s; }
+.music.is-playing .music__bars span:nth-child(2) { animation-duration: 760ms; }
+.music.is-playing .music__bars span:nth-child(3) { animation-duration: 1340ms; }
+.music.is-playing .music__bars span:nth-child(4) { animation-duration: 900ms; }
 
-@keyframes music-bounce {
-  from { height: 3px; }
-  to { height: 12px; }
+@keyframes music-bar {
+  from { transform: scaleY(1); }
+  to   { transform: scaleY(4.4); }
 }
 
-.music__label { font-size: 0.6rem; }
+/* ---------- Scroll cue ---------- */
 
-@media (max-width: 599px) {
-  .music { padding: 0.5rem 0.75rem; }
-  .music__label { display: none; }
+.scroll-cue {
+  display: grid;
+  justify-items: center;
+  gap: var(--sp-xs);
+  margin-block-start: var(--sp-lg);
+  color: var(--s-ink-faint);
+  transition: opacity var(--d-base) var(--e-out), transform var(--d-base) var(--e-out);
 }
+
+/* Once the first scroll has happened the cue has done its job. */
+.scroll-cue.is-gone {
+  opacity: 0;
+  transform: translate3d(0, 10px, 0);
+}
+
+.scroll-cue__line {
+  width: 1px;
+  height: 46px;
+  background: linear-gradient(to bottom, var(--c-brass), transparent);
+  transform-origin: 50% 0;
+  animation: scroll-hint 2600ms var(--e-inout) infinite;
+}
+
+@keyframes scroll-hint {
+  0%, 100% { transform: scaleY(0.4); opacity: 0.35; }
+  50%      { transform: scaleY(1);   opacity: 1; }
+}
+
+/* ---------- Section titles ---------- */
+
+.title { display: grid; gap: var(--sp-xs); }
+.title--center { justify-items: center; text-align: center; }
+.title--start { justify-items: start; text-align: start; }
+
+.title__eyebrow {
+  color: var(--c-brass-deep);
+  opacity: 0;
+  transform: translate3d(0, 10px, 0);
+  transition: opacity var(--d-base) var(--e-out), transform var(--d-base) var(--e-out);
+}
+
+.title__script {
+  font-family: var(--f-script);
+  font-weight: 400;
+  font-size: var(--t-h2);
+  line-height: 1.24;
+  color: var(--c-kumkum);
+  opacity: 0;
+  transform: translate3d(0, 16px, 0);
+  transition: opacity var(--d-slow) var(--e-out) 90ms, transform var(--d-slow) var(--e-out) 90ms;
+}
+
+.title.is-revealed .title__eyebrow,
+.title.is-revealed .title__script { opacity: 1; transform: none; }
+
+/* The one ornament the site repeats: a brass rule with a diamond at
+   its centre, drawn outward from the middle. */
+.title__rule {
+  display: grid;
+  grid-auto-flow: column;
+  align-items: center;
+  gap: var(--sp-xs);
+  margin-block-start: var(--sp-2xs);
+}
+
+.title__rule-line {
+  width: clamp(30px, 8vw, 74px);
+  height: 1px;
+  background: var(--c-brass);
+  opacity: 0.55;
+  transform: scaleX(0);
+  transition: transform var(--d-slow) var(--e-out) 260ms;
+}
+
+.title__rule-line:first-child  { transform-origin: 100% 50%; }
+.title__rule-line:last-child   { transform-origin: 0 50%; }
+
+.title__rule-mark {
+  width: 6px;
+  height: 6px;
+  rotate: 45deg;
+  background: var(--c-brass);
+  opacity: 0;
+  transform: scale(0.4);
+  transition: opacity var(--d-quick) var(--e-out) 200ms, transform var(--d-quick) var(--e-out) 200ms;
+}
+
+.title.is-revealed .title__rule-line { transform: scaleX(1); }
+.title.is-revealed .title__rule-mark { opacity: 0.85; transform: scale(1) rotate(0deg); }
+
+/* ---------- Photographic plates ---------- */
+
+.plate { margin: 0; display: grid; gap: var(--sp-sm); }
+
+.plate__frame {
+  position: relative;
+  /* Reserved before the file exists: the album occupies its final
+     space from first paint, so nothing below it ever shifts. */
+  aspect-ratio: var(--plate-ratio, 4 / 5);
+  overflow: hidden;
+  border-radius: var(--r-plate);
+  background: color-mix(in srgb, var(--c-sandal) 60%, transparent);
+  box-shadow: var(--sh-plate);
+  rotate: var(--plate-tilt, 0deg);
+  transition: rotate var(--d-base) var(--e-out), box-shadow var(--d-base) var(--e-out);
+}
+
+.plate:hover .plate__frame {
+  rotate: 0deg;
+  box-shadow: var(--sh-lift);
+}
+
+.plate__image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  transform: scale(1.05);
+  transition: opacity var(--d-slow) var(--e-soft), transform var(--d-slow) var(--e-soft);
+}
+
+.plate.is-loaded .plate__image { opacity: 1; transform: none; }
+
+.plate__empty {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: var(--sp-md);
+  text-align: center;
+  color: color-mix(in srgb, var(--c-maroon-deep) 42%, transparent);
+  border: 1px dashed var(--s-rule);
+  border-radius: inherit;
+}
+
+/* The sheen a print has under a light, at a glancing angle. */
+.plate__sheen {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(120deg, transparent 44%, color-mix(in srgb, var(--c-jasmine) 22%, transparent) 52%, transparent 60%);
+  opacity: 0;
+  transition: opacity var(--d-base) var(--e-out);
+  pointer-events: none;
+}
+
+.plate:hover .plate__sheen { opacity: 1; }
+
+.plate__caption {
+  font-size: clamp(1.1rem, 0.9rem + 0.8vw, 1.5rem);
+  color: var(--c-brass-deep);
+  text-align: center;
+}
+
+/* ---------- Event cards ---------- */
+
+.card {
+  position: relative;
+  display: flex;
+  width: 100%;
+  overflow: hidden;
+  border-radius: var(--r-plate);
+  border: 1px solid color-mix(in srgb, var(--c-brass-light) 34%, transparent);
+  background: var(--card-ground);
+  color: var(--s-on-dark);
+  box-shadow: var(--sh-lift);
+  transition: transform var(--d-quick) var(--e-out), box-shadow var(--d-quick) var(--e-out), border-color var(--d-quick) var(--e-out);
+}
+
+.card--night  { --card-ground: #1d0f0a; }
+.card--kumkum { --card-ground: #5c1020; }
+.card--brass  { --card-ground: #3a2a10; }
+.card--leaf   { --card-ground: #17291d; }
+
+/* Hover and tap do the same thing: the card lifts a little and the
+   brass edge catches more light. Nothing flips and nothing spins. */
+.card:hover,
+.card:focus-within {
+  transform: translate3d(0, -4px, 0);
+  border-color: color-mix(in srgb, var(--c-brass-light) 62%, transparent);
+  box-shadow: 0 30px 70px -34px color-mix(in srgb, var(--c-night) 80%, transparent), var(--sh-lamp);
+}
+
+.card__cloth { position: absolute; inset: 0; }
+
+/* The light that falls across the top edge of a card standing on a
+   lamplit table. */
+.card__edge {
+  position: absolute;
+  inset-inline: 0;
+  inset-block-start: 0;
+  height: 45%;
+  background: linear-gradient(to bottom, color-mix(in srgb, var(--c-flame) 13%, transparent), transparent);
+  pointer-events: none;
+}
+
+.card__body {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  gap: var(--sp-sm);
+  align-content: start;
+  padding: clamp(1.5rem, 4vw, 2.4rem);
+  width: 100%;
+}
+
+.card__kind { color: var(--c-brass-light); }
+
+.card__name {
+  font-family: var(--f-script);
+  font-weight: 400;
+  font-size: clamp(2rem, 1.4rem + 2.4vw, 3.2rem);
+  line-height: 1.2;
+  color: var(--c-flame-core);
+}
+
+.card__note {
+  margin: 0;
+  color: var(--s-on-dark-soft);
+  font-family: var(--f-display);
+  font-size: var(--t-body);
+  font-style: italic;
+  line-height: 1.6;
+}
+
+.card__facts {
+  display: grid;
+  align-content: start;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--sp-sm) var(--sp-md);
+  margin: 0;
+  padding-block-start: var(--sp-sm);
+  border-block-start: 1px solid color-mix(in srgb, var(--c-brass-light) 26%, transparent);
+}
+
+.card__fact--wide { grid-column: 1 / -1; }
+
+.card__fact dt { color: var(--c-brass-light); margin-block-end: var(--sp-2xs); }
+
+.card__fact dd {
+  margin: 0;
+  font-family: var(--f-display);
+  font-size: var(--t-lead);
+  line-height: 1.3;
+  color: var(--s-on-dark);
+}
+
+.card__city {
+  display: block;
+  font-family: var(--f-sans);
+  font-size: var(--t-label);
+  letter-spacing: var(--ls-label);
+  text-transform: uppercase;
+  color: var(--s-on-dark-faint);
+  margin-block-start: var(--sp-2xs);
+}
+
+.card__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-xs);
+  /* Pushed to the foot of the card, so the four sets of buttons sit
+     on one line across the row however long the copy above them runs. */
+  margin-block-start: auto;
+  padding-block-start: var(--sp-sm);
+}
+
+/* ---------- Actions, buttons, links ---------- */
+
+.action {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 44px;
+  padding: 0.5rem 0.9rem;
+  border: 1px solid color-mix(in srgb, var(--c-brass-light) 36%, transparent);
+  border-radius: var(--r-pill);
+  color: var(--s-on-dark-soft);
+  font-family: var(--f-sans);
+  font-size: var(--t-eyebrow);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background var(--d-instant) var(--e-out), color var(--d-instant) var(--e-out), border-color var(--d-instant) var(--e-out), transform var(--d-instant) var(--e-out);
+}
+
+.action svg { width: 15px; height: 15px; flex: none; }
+
+.action:hover,
+.action:focus-visible {
+  background: color-mix(in srgb, var(--c-flame) 12%, transparent);
+  border-color: var(--c-brass-light);
+  color: var(--c-flame-core);
+}
+
+.action:active { transform: translateY(1px); }
+
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+  min-height: 48px;
+  padding: 0.8rem 1.9rem;
+  border: 1px solid var(--c-brass);
+  border-radius: var(--r-pill);
+  background: transparent;
+  color: var(--c-maroon);
+  font-family: var(--f-sans);
+  font-size: var(--t-label);
+  letter-spacing: var(--ls-label);
+  text-indent: var(--ls-label);
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background var(--d-instant) var(--e-out), color var(--d-instant) var(--e-out), transform var(--d-instant) var(--e-out), box-shadow var(--d-instant) var(--e-out);
+}
+
+.button:hover,
+.button:focus-visible {
+  background: color-mix(in srgb, var(--c-brass) 12%, transparent);
+  box-shadow: var(--sh-card);
+}
+
+.button:active { transform: translateY(1px) scale(0.99); }
+
+.button--primary {
+  background: var(--c-kumkum);
+  border-color: var(--c-kumkum);
+  color: var(--c-ivory);
+}
+
+.button--primary:hover,
+.button--primary:focus-visible {
+  background: var(--c-kumkum-deep);
+  border-color: var(--c-kumkum-deep);
+  color: var(--c-ivory);
+}
+
+.button.is-disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.button span { position: relative; z-index: 1; }
+
+.button__sweep {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background: linear-gradient(100deg, transparent 38%, color-mix(in srgb, var(--c-flame-core) 26%, transparent) 50%, transparent 62%);
+  transform: translate3d(-120%, 0, 0);
+}
+
+.button:hover .button__sweep,
+.button:focus-visible .button__sweep { animation: sweep 900ms var(--e-out); }
+
+.link {
+  position: relative;
+  display: inline-block;
+  padding-block: var(--sp-2xs);
+  min-height: 44px;
+  align-content: center;
+  color: var(--c-kumkum);
+  font-family: var(--f-sans);
+  font-size: var(--t-label);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.link::after {
+  content: '';
+  position: absolute;
+  inset-inline: 0;
+  inset-block-end: 8px;
+  height: 1px;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: 0 50%;
+  transition: transform var(--d-instant) var(--e-out);
+}
+
+.link:hover::after,
+.link:focus-visible::after { transform: scaleX(1); }
+
+/* ---------- Sheets and fields ---------- */
+
+.sheet {
+  position: relative;
+  display: grid;
+  gap: var(--sp-md);
+  width: min(30rem, 100%);
+  padding: clamp(1.6rem, 4vw, 2.6rem);
+  padding-block-start: clamp(2rem, 5vw, 3rem);
+  background: var(--c-jasmine);
+  border: 1px solid var(--s-rule-soft);
+  border-radius: var(--r-plate);
+  box-shadow: var(--sh-plate);
+  text-align: start;
+}
+
+.sheet--wide { width: min(44rem, 100%); }
+
+/* The kumkum band across the head of a printed reply card. */
+.sheet__band {
+  position: absolute;
+  inset-inline: 0;
+  inset-block-start: 0;
+  height: 7px;
+  background: linear-gradient(to right, var(--c-maroon), var(--c-kumkum) 50%, var(--c-maroon));
+  border-start-start-radius: var(--r-plate);
+  border-start-end-radius: var(--r-plate);
+}
+
+.sheet__eyebrow { color: var(--c-brass-deep); text-align: center; }
+.sheet__hint { color: var(--s-ink-faint); text-align: center; margin-block-start: calc(var(--sp-md) * -1 + var(--sp-2xs)); }
+
+.field { display: grid; gap: var(--sp-2xs); }
+.field--group { border: 0; margin: 0; padding: 0; }
+
+.field__label {
+  color: var(--c-brass-deep);
+  /* The label is always visible; a placeholder is not a label. */
+  display: block;
+  margin-block-end: var(--sp-2xs);
+}
+
+.field__input {
+  width: 100%;
+  min-height: 48px;
+  padding: 0.7rem 0.9rem;
+  font-family: var(--f-display);
+  font-size: var(--t-body);
+  color: var(--s-ink);
+  background: var(--c-ivory);
+  border: 1px solid var(--s-rule-soft);
+  border-radius: var(--r-sm);
+  transition: border-color var(--d-instant) var(--e-out), box-shadow var(--d-instant) var(--e-out);
+}
+
+.field__input::placeholder { color: var(--s-ink-faint); font-style: italic; }
+
+.field__input:focus-visible {
+  border-color: var(--c-brass);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--c-brass) 18%, transparent);
+  outline: none;
+}
+
+.field__input--area { resize: vertical; min-height: 7rem; line-height: 1.6; }
+
+.field.has-error .field__input { border-color: var(--c-kumkum); }
+
+.field__error {
+  margin: 0;
+  font-size: var(--t-label);
+  color: var(--c-kumkum-deep);
+}
+
+.field__help {
+  margin: 0;
+  font-size: var(--t-label);
+  color: var(--s-ink-faint);
+}
+
+.field__select { position: relative; display: grid; }
+.field__select .field__input { appearance: none; padding-inline-end: 2.4rem; }
+
+.field__chevron {
+  position: absolute;
+  inset-inline-end: 0.9rem;
+  inset-block-start: 50%;
+  translate: 0 -50%;
+  width: 16px;
+  height: 16px;
+  color: var(--c-brass-deep);
+  pointer-events: none;
+}
+
+/* ---------- Event chooser ---------- */
+
+.chooser { display: grid; gap: var(--sp-xs); }
+
+.chooser__option {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: var(--sp-sm);
+  min-height: 48px;
+  padding: 0.6rem 0.9rem;
+  border: 1px solid var(--s-rule-soft);
+  border-radius: var(--r-sm);
+  background: var(--c-ivory);
+  cursor: pointer;
+  transition: border-color var(--d-instant) var(--e-out), background var(--d-instant) var(--e-out);
+}
+
+.chooser__option:hover { border-color: var(--c-brass); }
+.chooser__option.is-on { border-color: var(--c-kumkum); background: color-mix(in srgb, var(--c-kumkum) 5%, var(--c-ivory)); }
+
+/* The real checkbox stays in the accessibility tree and keeps its
+   focus ring — it is placed under the mark, not removed. */
+.chooser__input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+}
+
+.chooser__mark {
+  display: grid;
+  place-items: center;
+  width: 20px;
+  height: 20px;
+  border: 1px solid var(--c-brass);
+  border-radius: 3px;
+  color: var(--c-ivory);
+  background: transparent;
+  transition: background var(--d-instant) var(--e-out), border-color var(--d-instant) var(--e-out);
+}
+
+.chooser__mark svg { width: 13px; height: 13px; opacity: 0; transform: scale(0.6); transition: opacity var(--d-instant) var(--e-out), transform var(--d-instant) var(--e-out); }
+
+.chooser__option.is-on .chooser__mark { background: var(--c-kumkum); border-color: var(--c-kumkum); }
+.chooser__option.is-on .chooser__mark svg { opacity: 1; transform: none; }
+
+.chooser__input:focus-visible + .chooser__mark {
+  outline: 2px solid var(--c-brass);
+  outline-offset: 2px;
+}
+
+.chooser__text { display: grid; gap: 1px; }
+.chooser__name { font-family: var(--f-display); font-size: var(--t-body); color: var(--c-maroon); }
+.chooser__when { font-size: var(--t-label); color: var(--s-ink-faint); }
 
 /* ---------- Footer ---------- */
 
 .footer {
   position: relative;
-  z-index: var(--z-content);
+  z-index: var(--z-midground);
   display: grid;
   justify-items: center;
-  gap: var(--sp-sm);
-  padding: var(--sp-2xl) var(--sp-gutter) calc(var(--sp-2xl) + 3rem);
-  background: linear-gradient(to bottom, var(--scene-finale), var(--c-beige));
-  color: var(--s-ink-soft);
+  gap: var(--sp-xs);
+  padding: var(--sp-xl) var(--sp-gutter);
+  padding-block-end: max(var(--sp-xl), calc(env(safe-area-inset-bottom) + var(--sp-xl)));
+  background: var(--c-maroon-deep);
+  color: var(--s-on-dark-soft);
   text-align: center;
 }
 
-.footer__mark {
-  font-size: var(--t-h3);
-  letter-spacing: 0.28em;
-  color: var(--c-gold-deep);
-}
+.footer__mark { font-size: var(--t-h3); color: var(--c-brass-light); letter-spacing: 0.1em; }
+.footer__line { color: var(--s-on-dark-faint); }
 
-.footer__line { color: var(--s-ink-faint); }
-
-/* ---------- The doorway ----------
-   The one deliberate cut in the site: a closed door that opens onto
-   the mandapam. It sits above everything, opens itself after a beat,
-   and is removed from the document once it is out of frame.
-   ---------------------------------------------------------------- */
-
-.blossom-sprite {
-  position: absolute;
-  width: 0;
-  height: 0;
-  overflow: hidden;
-  pointer-events: none;
-}
-
-.doorway {
-  position: fixed;
-  inset: 0;
-  z-index: var(--z-overlay);
-  overflow: hidden;
-  pointer-events: none;
-  background: var(--c-navy-deep);
-  transition: background-color var(--d-cinematic) var(--e-soft);
-}
-
-.doorway.is-opening {
-  background-color: transparent;
-}
-
-/* The carved wall the doors are set into, and its threshold. */
-.doorway__wall {
-  position: absolute;
-  inset: 0;
-  background:
-    radial-gradient(ellipse 60% 40% at 50% 100%, color-mix(in srgb, var(--c-flame) 18%, transparent), transparent 70%),
-    linear-gradient(to bottom, #101f36, #1b3252 45%, #26405f);
-  transition: opacity var(--d-cinematic) var(--e-soft);
-}
-
-.doorway__lamp {
-  position: absolute;
-  bottom: 6%;
-}
-
-.doorway__lamp--left { left: clamp(1rem, 9vw, 9rem); }
-.doorway__lamp--right { right: clamp(1rem, 9vw, 9rem); }
-
-.doorway__garland { top: 0; opacity: 0.8; }
-.doorway__garland--left { left: clamp(0.5rem, 6vw, 6rem); }
-.doorway__garland--right { right: clamp(0.5rem, 6vw, 6rem); }
-
-.doorway__kolam {
-  position: absolute;
-  bottom: 2%;
-  left: 50%;
-  translate: -50% 0;
-  color: var(--c-gold);
-  opacity: 0.45;
-}
-
-/* The two panels. They swing from their outer edge rather than
-   sliding, so the light widens across the floor as they part. */
-.doorway__panel {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  width: 50.5%;
-  transform-style: preserve-3d;
-  transition: transform 2200ms cubic-bezier(0.62, 0.02, 0.2, 1);
-  box-shadow: 0 0 90px color-mix(in srgb, var(--c-navy-deep) 80%, transparent);
-}
-
-.doorway__field { width: 100%; height: 100%; }
-
-.doorway__panel--left { left: 0; transform-origin: left center; }
-.doorway__panel--right { right: 0; transform-origin: right center; }
-
-.doorway.is-opening .doorway__panel--left { transform: perspective(1600px) rotateY(-86deg); }
-.doorway.is-opening .doorway__panel--right { transform: perspective(1600px) rotateY(86deg); }
-
-.doorway.is-opening .doorway__wall { opacity: 0; }
-
-.doorway__carving {
-  position: absolute;
-  left: 50%;
-  top: 31%;
-  width: min(44%, 250px);
-  aspect-ratio: 1;
-  translate: -50% -50%;
-  overflow: visible;
-}
-
-.doorway__carving--low {
-  top: 73%;
-  width: min(28%, 160px);
-}
-
-/* The handle sits on the meeting edge, so the two rings read as one
-   pair of doors rather than two separate panels. */
-.doorway__ring {
-  position: absolute;
-  top: 50%;
-  width: clamp(20px, 2.4vw, 34px);
-  aspect-ratio: 1;
-  border: 2px solid var(--c-gold);
-  border-radius: 50%;
-  opacity: 0.75;
-  translate: 0 -50%;
-}
-
-.doorway__panel--left .doorway__ring {
-  right: clamp(14px, 1.8vw, 30px);
-  left: auto;
-}
-
-.doorway__panel--right .doorway__ring {
-  left: clamp(14px, 1.8vw, 30px);
-  right: auto;
-}
-
-/* The light that spills through the widening gap. */
-.doorway__light {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 50%;
-  width: 2px;
-  translate: -50% 0;
-  background: linear-gradient(to bottom, transparent, var(--c-flame-core), transparent);
-  opacity: 0;
-  transition:
-    opacity 900ms var(--e-out),
-    width 2200ms cubic-bezier(0.62, 0.02, 0.2, 1);
-}
-
-.doorway.is-opening .doorway__light {
-  opacity: 0.55;
-  width: 78vw;
-}
+/* ---------- Reduced motion ---------- */
 
 @media (prefers-reduced-motion: reduce) {
-  /* The doors are never shown at all — the visitor starts inside. */
-  .doorway { display: none; }
+  .opening__line,
+  .opening__date,
+  .opening__wall,
+  .opening__frame-edge { opacity: 1 !important; transform: none !important; filter: none !important; }
+
+  .opening .lamplight { opacity: 1 !important; }
+  .opening.is-leaving .opening__flood { animation: none; }
+
+  .title__eyebrow,
+  .title__script { opacity: 1 !important; transform: none !important; }
+  .title__rule-line { transform: scaleX(1) !important; }
+  .title__rule-mark { opacity: 0.85 !important; transform: none !important; }
+
+  .plate__image { opacity: 1 !important; transform: none !important; }
+
+  .scroll-cue__line,
+  .music.is-playing .music__bars span { animation: none; }
+
+  .opening__cta-sweep,
+  .button__sweep { display: none; }
 }

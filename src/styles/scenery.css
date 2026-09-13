@@ -1,320 +1,229 @@
 /* =============================================================
    SCENERY
-   Lighting, depth and organic movement for the physical elements
-   of the venue. Geometry lives in the components; everything that
-   makes it feel lit lives here.
+   Light, cloth, paper and flowers. Everything in this file is
+   decorative, inert to pointers, and hidden from assistive tech —
+   and every animation in it runs on transform or opacity alone.
    ============================================================= */
 
-/* ---------- Jasmine garlands ---------- */
+/* ---------- The colour grade of the whole film ---------- */
 
-.garland {
-  position: absolute;
-  top: 0;
-  /* No drop-shadow here: the strands sway, and a filter over moving
-     content re-rasterises the whole bunch every frame. The blossoms
-     carry their own stroke, which is what reads as depth anyway. */
+.atmosphere {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-backdrop);
+  background:
+    linear-gradient(
+      to bottom,
+      var(--atm-top) 0%,
+      var(--atm-mid) 46%,
+      var(--atm-base) 100%
+    );
+  /* The three stops are written by JS from scroll position; the
+     transition only smooths the gaps between writes. Colour is not
+     a compositor property, but this is one element on the page, so
+     it costs one paint of one layer rather than forty. */
+  transition: background 400ms linear;
 }
 
-.garland__strand {
-  animation: sway var(--sway-period, 8s) var(--e-inout) infinite alternate;
-  animation-delay: var(--sway-delay, 0s);
+/* ---------- Paper grain ----------
+   One static turbulence texture, no animation. The single cheapest
+   thing that stops flat colour reading as a screen. */
+
+.grain {
+  position: fixed;
+  inset: -20%;
+  z-index: var(--z-architecture);
+  opacity: var(--grain-strength, 0.22);
+  mix-blend-mode: multiply;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");
+  background-size: 180px 180px;
 }
 
-@keyframes sway {
-  from {
-    rotate: calc(var(--sway-amplitude, 1.5deg) * -1);
-  }
-  to {
-    rotate: var(--sway-amplitude, 1.5deg);
-  }
-}
+/* ---------- Lamplight ----------
+   A brass lamp given as light. Three stacked gradients do the
+   falloff: one tight and near-white, one wide and amber, one very
+   wide and almost gone. A single gradient reads as a glow effect;
+   three read as distance. */
 
-/* ---------- Thoranam ---------- */
-
-.thoranam {
-  position: absolute;
-  inset-inline: -2%;
-  top: 0;
-  height: clamp(52px, 8vw, 108px);
-}
-
-.thoranam svg {
+.lamplight {
   position: absolute;
   inset: 0;
-  width: 100%;
-  height: 100%;
+  overflow: hidden;
+  --lamp-x: 50%;
+  --lamp-y: 100%;
 }
 
-.thoranam__leaves {
-  animation: sway 11s var(--e-inout) infinite alternate;
-  transform-origin: 50% 0;
-  --sway-amplitude: 0.5deg;
-}
+.lamplight--bottom-left  { --lamp-x: 14%; --lamp-y: 92%; }
+.lamplight--bottom-right { --lamp-x: 86%; --lamp-y: 92%; }
+.lamplight--bottom       { --lamp-x: 50%; --lamp-y: 100%; }
+.lamplight--left         { --lamp-x: 4%;  --lamp-y: 52%; }
+.lamplight--right        { --lamp-x: 96%; --lamp-y: 52%; }
+.lamplight--above        { --lamp-x: 50%; --lamp-y: -6%; }
 
-/* ---------- Kuthu vilakku ---------- */
-
-.vilakku {
-  position: relative;
-  /* The flame flickers inside this box — the lamp's own pool of light
-     gives it depth without a filter over moving content. */
-}
-
-.vilakku svg {
-  width: 100%;
-  height: 100%;
-}
-
-/* The warm pool the flame throws — the lamp lights its surroundings,
-   it does not merely glow at them. */
-.vilakku__pool {
+.lamplight > span {
   position: absolute;
-  left: 50%;
-  top: 8%;
-  width: 420%;
-  aspect-ratio: 1;
-  translate: -50% -34%;
+  left: var(--lamp-x);
+  top: var(--lamp-y);
+  translate: -50% -50%;
   border-radius: 50%;
+  /* Every source scales and fades from its own centre, so the whole
+     thing is two compositor properties and nothing else. */
+  transform-origin: 50% 50%;
+}
+
+.lamplight__core {
+  width: calc(var(--lamp-spread, 1) * 34vw);
+  aspect-ratio: 1;
   background: radial-gradient(
     circle,
-    color-mix(in srgb, var(--c-flame) 30%, transparent) 0%,
-    color-mix(in srgb, var(--c-marigold) 13%, transparent) 32%,
-    transparent 68%
-  );
-  animation: lamp-breathe 5.5s var(--e-inout) infinite alternate;
-  animation-delay: var(--flame-phase, 0s);
-  pointer-events: none;
-}
-
-.vilakku__flame {
-  transform-origin: 60px 92px;
-  animation: flicker 2.6s var(--e-inout) infinite alternate;
-  animation-delay: var(--flame-phase, 0s);
-}
-
-@keyframes flicker {
-  0% {
-    transform: scale(1, 0.94) skewX(-1.6deg);
-    opacity: 0.88;
-  }
-  35% {
-    transform: scale(1.03, 1.06) skewX(1.4deg);
-    opacity: 1;
-  }
-  62% {
-    transform: scale(0.97, 1.01) skewX(-0.8deg);
-    opacity: 0.93;
-  }
-  100% {
-    transform: scale(1.02, 1.09) skewX(2deg);
-    opacity: 1;
-  }
-}
-
-@keyframes lamp-breathe {
-  from {
-    opacity: 0.72;
-    scale: 0.94;
-  }
-  to {
-    opacity: 1;
-    scale: 1.05;
-  }
-}
-
-/* ---------- Kolam ---------- */
-
-.kolam {
-  color: var(--c-gold);
-  opacity: 0.5;
-}
-
-.kolam svg {
-  width: 100%;
-  height: 100%;
-}
-
-.kolam__line * {
-  stroke-dasharray: 600;
-  stroke-dashoffset: 600;
-  transition: stroke-dashoffset var(--d-epic) var(--e-soft);
-}
-
-.kolam.is-drawn .kolam__line * {
-  stroke-dashoffset: 0;
-}
-
-/* Each loop of the kolam is laid after the one before it. */
-.kolam__line > *:nth-child(2) { transition-delay: 180ms; }
-.kolam__line > *:nth-child(3) { transition-delay: 360ms; }
-.kolam__line > *:nth-child(4) { transition-delay: 540ms; }
-.kolam__line > *:nth-child(n + 5) { transition-delay: 720ms; }
-
-/* ---------- Pillars ---------- */
-
-.pillar {
-  position: absolute;
-  bottom: 0;
-  filter: drop-shadow(0 0 40px color-mix(in srgb, var(--c-navy) 22%, transparent));
-}
-
-.pillar svg {
-  width: 100%;
-  height: 100%;
-}
-
-.pillar--left { left: 0; }
-.pillar--right { right: 0; scale: -1 1; }
-
-/* ---------- Gopuram ---------- */
-
-.gopuram {
-  position: absolute;
-  bottom: 0;
-}
-
-.gopuram svg {
-  width: 100%;
-  height: 100%;
-}
-
-/* Aerial perspective: the further tower is paler and softer. */
-.gopuram--d0 { color: color-mix(in srgb, var(--c-navy) 52%, transparent); filter: blur(0.4px); }
-.gopuram--d1 { color: color-mix(in srgb, var(--c-blue-muted) 34%, transparent); filter: blur(1.6px); }
-.gopuram--d2 { color: color-mix(in srgb, var(--c-blue-french) 20%, transparent); filter: blur(3.4px); }
-
-/* ---------- Floral arch ---------- */
-
-.arch {
-  position: absolute;
-  inset: 0;
-}
-
-.arch svg {
-  width: 100%;
-  height: 100%;
-}
-
-.arch__bloom {
-  opacity: 0;
-  transform: scale(0.55);
-  transform-box: fill-box;
-  transform-origin: center;
-  transition:
-    opacity var(--d-base) var(--e-out),
-    transform var(--d-base) var(--e-out);
-  /* Built from both feet up towards the crown, in a fixed span of
-     time however many flowers the arch carries. */
-  transition-delay: var(--bloom-delay, 0s);
-}
-
-.arch.is-built .arch__bloom {
-  opacity: 1;
-  transform: scale(1);
-}
-
-/* ---------- Clusters ---------- */
-
-.cluster {
-  position: absolute;
-  filter: drop-shadow(0 10px 20px color-mix(in srgb, var(--c-navy) 20%, transparent));
-}
-
-.cluster svg {
-  width: 100%;
-  height: 100%;
-}
-
-/* ---------- Haze ---------- */
-
-.haze {
-  position: absolute;
-  inset: 0;
-  z-index: var(--z-midground);
-}
-
-.haze--blue { --haze-a: var(--c-blue-dusty); --haze-b: var(--c-blue-powder); }
-.haze--warm { --haze-a: var(--c-gold-soft); --haze-b: var(--c-flame); }
-.haze--ivory { --haze-a: var(--c-ivory); --haze-b: var(--c-cream); }
-
-.haze--bottom {
-  background: linear-gradient(
-    to top,
-    color-mix(in srgb, var(--haze-a) calc(52% * var(--haze-strength, 1)), transparent),
-    color-mix(in srgb, var(--haze-b) calc(16% * var(--haze-strength, 1)), transparent) 34%,
-    transparent 68%
+    color-mix(in srgb, var(--c-flame-core) calc(var(--lamp-strength, 0.7) * 62%), transparent) 0%,
+    color-mix(in srgb, var(--c-flame) calc(var(--lamp-strength, 0.7) * 34%), transparent) 38%,
+    transparent 70%
   );
 }
 
-.haze--top {
-  background: linear-gradient(
-    to bottom,
-    color-mix(in srgb, var(--haze-a) calc(48% * var(--haze-strength, 1)), transparent),
-    transparent 62%
-  );
-}
-
-.haze--left {
-  background: linear-gradient(
-    to right,
-    color-mix(in srgb, var(--haze-a) calc(42% * var(--haze-strength, 1)), transparent),
-    transparent 58%
-  );
-}
-
-.haze--right {
-  background: linear-gradient(
-    to left,
-    color-mix(in srgb, var(--haze-a) calc(42% * var(--haze-strength, 1)), transparent),
-    transparent 58%
-  );
-}
-
-.haze--centre {
+.lamplight__pool {
+  width: calc(var(--lamp-spread, 1) * 82vw);
+  aspect-ratio: 1;
   background: radial-gradient(
-    ellipse 70% 55% at 50% 48%,
-    color-mix(in srgb, var(--haze-b) calc(34% * var(--haze-strength, 1)), transparent),
+    circle,
+    color-mix(in srgb, var(--c-flame) calc(var(--lamp-strength, 0.7) * 26%), transparent) 0%,
+    color-mix(in srgb, var(--c-marigold) calc(var(--lamp-strength, 0.7) * 13%), transparent) 44%,
     transparent 72%
   );
 }
 
-/* ---------- Petals ---------- */
+.lamplight__reach {
+  width: calc(var(--lamp-spread, 1) * 150vw);
+  aspect-ratio: 1;
+  background: radial-gradient(
+    circle,
+    color-mix(in srgb, var(--c-brass) calc(var(--lamp-strength, 0.7) * 14%), transparent) 0%,
+    transparent 66%
+  );
+}
 
-.petals {
+/* Light does not stop at the lamp — it lands on the floor in front
+   of it, flattened by the angle. This ellipse is the difference
+   between a glow and a lit room. */
+.lamplight__bounce {
+  width: calc(var(--lamp-spread, 1) * 70vw);
+  height: calc(var(--lamp-spread, 1) * 18vw);
+  border-radius: 50%;
+  translate: -50% 10%;
+  background: radial-gradient(
+    ellipse,
+    color-mix(in srgb, var(--c-flame) calc(var(--lamp-strength, 0.7) * 17%), transparent) 0%,
+    transparent 68%
+  );
+  filter: blur(14px);
+}
+
+/* An oil flame is never quite still. Two sources in one room are
+   given different phases so they never breathe in step — in step,
+   the eye reads the pair as a single CSS animation. */
+.lamplight.is-flickering .lamplight__core,
+.lamplight.is-flickering .lamplight__pool {
+  animation: lamp-breathe var(--d-ambient) var(--e-drift) infinite alternate;
+  animation-delay: var(--lamp-phase, 0s);
+  will-change: transform, opacity;
+}
+
+.lamplight.is-flickering .lamplight__pool {
+  animation-duration: calc(var(--d-ambient) * 1.37);
+}
+
+@keyframes lamp-breathe {
+  0%   { opacity: 0.82; transform: translate(-50%, -50%) scale(0.965); }
+  38%  { opacity: 0.97; transform: translate(-50%, -50%) scale(1.012); }
+  61%  { opacity: 0.88; transform: translate(-50%, -50%) scale(0.988); }
+  100% { opacity: 1;    transform: translate(-50%, -50%) scale(1.03); }
+}
+
+/* ---------- Kanchipuram silk ----------
+   Two crossed sets of hairlines for the weave, one wide drifting
+   band for the sheen. No image, nothing to decode. */
+
+.silk {
   position: absolute;
   inset: 0;
   overflow: hidden;
-  z-index: var(--z-foreground);
+  opacity: var(--silk-strength, 0.5);
 }
 
-.petals__petal {
+.silk > span {
   position: absolute;
-  top: -8%;
-  border-radius: 60% 40% 55% 45% / 70% 60% 40% 30%;
+  inset: -30%;
+}
+
+.silk__weave {
+  background-image:
+    repeating-linear-gradient(
+      var(--silk-angle, 18deg),
+      var(--silk-thread) 0 1px,
+      transparent 1px 4px
+    ),
+    repeating-linear-gradient(
+      calc(var(--silk-angle, 18deg) + 92deg),
+      var(--silk-thread-cross) 0 1px,
+      transparent 1px 7px
+    );
+  opacity: 0.5;
+}
+
+/* The one band of light that says silk rather than cotton. It is a
+   translate of a single element — the gradient itself never moves. */
+.silk__sheen {
   background: linear-gradient(
-    140deg,
-    var(--petal-a, var(--c-jasmine)),
-    var(--petal-b, var(--c-cream))
+    calc(var(--silk-angle, 18deg) + 90deg),
+    transparent 34%,
+    var(--silk-zari) 50%,
+    transparent 66%
   );
-  box-shadow: 0 1px 3px color-mix(in srgb, var(--c-navy) 18%, transparent);
-  animation: petal-fall var(--petal-duration, 22s) linear infinite;
-  animation-delay: var(--petal-delay, 0s);
+  animation: silk-sheen 26s var(--e-drift) infinite alternate;
 }
 
-.petals--blue .petals__petal {
-  --petal-a: var(--c-blue-mist);
-  --petal-b: var(--c-blue-powder);
+@keyframes silk-sheen {
+  from { transform: translate3d(-18%, -6%, 0); opacity: 0.55; }
+  to   { transform: translate3d(18%, 6%, 0);   opacity: 1; }
 }
 
-@keyframes petal-fall {
-  from {
-    transform: translate3d(0, 0, 0) rotate(0deg);
-  }
-  to {
-    transform: translate3d(var(--petal-drift, 60px), 118vh, 0) rotate(var(--petal-spin, 360deg));
-  }
+.silk--kumkum { --silk-thread: color-mix(in srgb, var(--c-maroon) 26%, transparent);
+                --silk-thread-cross: color-mix(in srgb, var(--c-kumkum) 16%, transparent);
+                --silk-zari: color-mix(in srgb, var(--c-brass-light) 15%, transparent); }
+.silk--brass  { --silk-thread: color-mix(in srgb, var(--c-brass-deep) 26%, transparent);
+                --silk-thread-cross: color-mix(in srgb, var(--c-brass) 15%, transparent);
+                --silk-zari: color-mix(in srgb, var(--c-flame-core) 16%, transparent); }
+.silk--leaf   { --silk-thread: color-mix(in srgb, var(--c-leaf-deep) 26%, transparent);
+                --silk-thread-cross: color-mix(in srgb, var(--c-leaf) 15%, transparent);
+                --silk-zari: color-mix(in srgb, var(--c-brass-light) 14%, transparent); }
+.silk--ivory  { --silk-thread: color-mix(in srgb, var(--c-sandal-deep) 30%, transparent);
+                --silk-thread-cross: color-mix(in srgb, var(--c-sandal) 20%, transparent);
+                --silk-zari: color-mix(in srgb, var(--c-brass-light) 20%, transparent); }
+
+/* ---------- Atmospheric haze ----------
+   What separates the planes optically: distance loses contrast,
+   foreground keeps it. */
+
+.haze {
+  position: absolute;
+  inset: 0;
+  opacity: var(--haze-strength, 1);
 }
 
-/* ---------- Bokeh ---------- */
+.haze--top      { background: linear-gradient(to bottom, var(--haze-tone) 0%, transparent 58%); }
+.haze--bottom   { background: linear-gradient(to top, var(--haze-tone) 0%, transparent 56%); }
+.haze--left     { background: linear-gradient(to right, var(--haze-tone) 0%, transparent 52%); }
+.haze--right    { background: linear-gradient(to left, var(--haze-tone) 0%, transparent 52%); }
+.haze--centre   { background: radial-gradient(ellipse at centre, var(--haze-tone) 0%, transparent 66%); }
+
+.haze--warm  { --haze-tone: color-mix(in srgb, var(--c-flame) 26%, transparent); }
+.haze--ivory { --haze-tone: color-mix(in srgb, var(--c-ivory) 60%, transparent); }
+.haze--brass { --haze-tone: color-mix(in srgb, var(--c-brass) 22%, transparent); }
+
+/* ---------- Out-of-focus lamplight ----------
+   Part of the depth of field, not a particle effect: these only
+   appear in blurred planes, and they breathe rather than travel. */
 
 .bokeh {
   position: absolute;
@@ -326,34 +235,130 @@
   position: absolute;
   border-radius: 50%;
   translate: -50% -50%;
-  animation: lamp-breathe var(--bokeh-duration, 12s) var(--e-inout) infinite alternate;
+  filter: blur(26px);
+  animation: bokeh-breathe var(--bokeh-duration, 12s) var(--e-drift) infinite alternate;
   animation-delay: var(--bokeh-delay, 0s);
 }
 
-.bokeh__light.is-warm {
-  background: radial-gradient(
-    circle,
-    var(--c-flame) 0%,
-    color-mix(in srgb, var(--c-flame) 55%, transparent) 30%,
-    transparent 72%
-  );
+.bokeh__light.is-warm { background: radial-gradient(circle, var(--c-flame) 0%, transparent 68%); }
+.bokeh__light.is-cool { background: radial-gradient(circle, var(--c-sandal) 0%, transparent 68%); }
+
+@keyframes bokeh-breathe {
+  from { transform: translate3d(0, 0, 0) scale(0.9); }
+  to   { transform: translate3d(0, -14px, 0) scale(1.08); }
 }
 
-.bokeh__light.is-cool {
-  background: radial-gradient(
-    circle,
-    var(--c-blue-powder) 0%,
-    color-mix(in srgb, var(--c-blue-powder) 55%, transparent) 30%,
-    transparent 72%
-  );
+/* ---------- Petals ----------
+   A dozen drifting petals reads as a wedding; a hundred reads as
+   confetti. Each is one composited element on one keyframe, so the
+   whole effect costs nothing per frame on the main thread. */
+
+.petals {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
 }
 
-/* ---------- Mobile: keep the venue, simplify the foreground ---------- */
+.petals__petal {
+  position: absolute;
+  top: -8%;
+  border-radius: 62% 38% 54% 46% / 58% 62% 38% 42%;
+  /* A petal at this distance is out of focus. Sharp-edged, it reads
+     as a shape on the glass rather than as something in the air. */
+  filter: blur(0.6px);
+  animation: petal-fall var(--petal-duration, 22s) linear infinite;
+  animation-delay: var(--petal-delay, 0s);
+}
 
-@media (max-width: 599px) {
-  /* Deep foreground detail becomes clutter at this width — the
-     architecture and flowers stay, the extra depth planes go. */
-  .bokeh { opacity: 0.6; }
-  .cluster { filter: none; }
-  .pillar { filter: none; }
+.petals--jasmine .petals__petal {
+  background: linear-gradient(140deg, var(--c-jasmine) 0%, var(--c-jasmine-shade) 100%);
+}
+
+.petals--marigold .petals__petal {
+  background: linear-gradient(140deg, var(--c-turmeric) 0%, var(--c-marigold) 100%);
+}
+
+/* Drift and spin are folded into the one transform so the petal is
+   a single composited layer with no interpolation conflicts. */
+@keyframes petal-fall {
+  from { transform: translate3d(0, -10vh, 0) rotate(0deg); }
+  to   { transform: translate3d(var(--petal-drift, 60px), 112vh, 0) rotate(var(--petal-spin, 360deg)); }
+}
+
+/* ---------- Kolam ----------
+   The one thing on this site that is literally drawn — because a
+   kolam *is* a drawing, made of line, at a threshold, by hand. */
+
+.kolam {
+  position: relative;
+  color: var(--c-brass);
+  max-width: 100%;
+}
+
+.kolam svg {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.kolam__line [pathLength],
+.kolam__line path,
+.kolam__line circle {
+  stroke-dasharray: 100;
+  stroke-dashoffset: 100;
+}
+
+/* Laid stroke by stroke, in the order a hand would lay them. */
+.kolam.is-drawn .kolam__line path,
+.kolam.is-drawn .kolam__line circle {
+  animation: kolam-draw 1100ms var(--e-out) forwards;
+  animation-delay: calc(var(--kolam-delay, 0ms) + var(--stroke-index, 0) * 46ms);
+}
+
+@keyframes kolam-draw {
+  to { stroke-dashoffset: 0; }
+}
+
+/* ---------- Flower clusters ---------- */
+
+.cluster {
+  position: absolute;
+  max-width: 100%;
+}
+
+.cluster svg {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.blossom-sprite {
+  position: absolute;
+  width: 0;
+  height: 0;
+  overflow: hidden;
+}
+
+/* ---------- Reduced motion ----------
+   The composition is never taken away — only the camera is stilled.
+   The kolam is shown complete rather than drawn, the light holds at
+   full strength rather than breathing, and the petals are simply
+   not shed (the component returns nothing). */
+
+@media (prefers-reduced-motion: reduce) {
+  .kolam__line path,
+  .kolam__line circle {
+    stroke-dashoffset: 0;
+  }
+
+  .silk__sheen,
+  .bokeh__light,
+  .lamplight.is-flickering .lamplight__core,
+  .lamplight.is-flickering .lamplight__pool {
+    animation: none;
+  }
+
+  .atmosphere {
+    transition: none;
+  }
 }

@@ -1,96 +1,122 @@
 /* =============================================================
    DESIGN TOKENS — Prithvi Raj & Harshini
-   A blue-and-ivory South Indian mandapam, expressed as variables.
-   Nothing in this project should hardcode a colour, duration or
-   easing curve that belongs here.
+   A Tamil Nadu wedding expressed as variables: kumkum and
+   maroon, antique temple brass, turmeric and marigold, warm
+   ivory paper, sandalwood, and the green of a mango-leaf
+   thoranam. Nothing in this project hardcodes a colour, a
+   duration or an easing curve that belongs here.
    ============================================================= */
 
 :root {
-  /* ---------- Palette: blue atmosphere ---------- */
-  --c-blue-mist: #e7edf4;   /* powder blue, near-white haze      */
-  --c-blue-powder: #cfdcea;  /* powder blue                       */
-  --c-blue-dusty: #a8bed4;   /* dusty blue — the signature tone   */
-  --c-blue-french: #7995b4;  /* French blue accent                */
-  --c-blue-muted: #4d6a8d;   /* muted royal blue                  */
-  --c-navy: #1d3557;         /* deep navy                         */
-  --c-navy-deep: #0e1f38;    /* deepest navy, for night scenes    */
+  /* ---------- Kumkum, maroon ---------- */
+  --c-kumkum: #b0182f;       /* the signature red                 */
+  --c-kumkum-deep: #8d1226;
+  --c-maroon: #6b1220;       /* headings, ceremonial type         */
+  --c-maroon-deep: #4a0c17;
+  --c-magenta: #a13a5c;      /* muted, never hot pink             */
 
-  /* ---------- Palette: warm ivory ---------- */
-  --c-ivory: #f8f4ec;
-  --c-cream: #f1e9dc;
-  --c-beige: #e3d7c5;
-  --c-sand: #cdbda6;
+  /* ---------- Brass and temple gold ----------
+     Brass is a dull, slightly green-yellow metal. The mistake
+     that makes gold look cheap is reaching for pure yellow. */
+  --c-brass: #a67c34;
+  --c-brass-light: #d8b878;
+  --c-brass-deep: #74531f;
+  --c-gold-leaf: #c19a4b;
+  --c-flame: #ffc470;        /* the light a lamp actually throws  */
+  --c-flame-core: #fff0cf;
 
-  /* ---------- Palette: antique gold & brass ---------- */
-  --c-gold: #c9a961;
-  --c-gold-soft: #e0c68f;
-  --c-gold-deep: #a4813f;
-  --c-brass: #b08d4f;
-  --c-flame: #ffcf7a;
-  --c-flame-core: #fff3d4;
+  /* ---------- Turmeric, marigold ---------- */
+  --c-turmeric: #dfa53a;
+  --c-marigold: #dd7429;
+  --c-kanakambaram: #d8632f;
 
-  /* ---------- Palette: floral accents ---------- */
-  --c-jasmine: #fdfbf6;
-  --c-jasmine-shade: #eae3d6;
-  --c-leaf: #6f7f63;
-  --c-leaf-deep: #4d5a45;
-  --c-marigold: #e7a94b;
-  --c-kanakambaram: #e08a52;
+  /* ---------- Paper, sandalwood, jasmine ---------- */
+  --c-ivory: #faf3e8;
+  --c-paper: #f6ecdd;
+  --c-sandal: #e9dcc4;
+  --c-sandal-deep: #d5c2a2;
+  --c-jasmine: #fffdf8;
+  --c-jasmine-shade: #eee4d3;
 
-  /* ---------- Semantic surfaces ---------- */
-  --s-ink: var(--c-navy-deep);
-  --s-ink-soft: color-mix(in srgb, var(--c-navy) 72%, transparent);
-  --s-ink-faint: color-mix(in srgb, var(--c-navy) 46%, transparent);
+  /* ---------- Green: mango leaf, peacock ---------- */
+  --c-leaf: #6b8352;
+  --c-leaf-deep: #47593a;
+  --c-sage: #dde3cd;         /* the quiet section ground          */
+  --c-sage-deep: #c6d0b2;
+  --c-peacock: #124742;
+
+  /* ---------- Blush ---------- */
+  --c-blush: #fbeef0;
+  --c-blush-deep: #f5dfe3;
+
+  /* ---------- Night: the ground the film opens on ----------
+     Warm near-black, never neutral grey — a room at night with
+     a flame in it is brown, not blue. */
+  --c-night: #150b07;
+  --c-night-soft: #2a140e;
+  --c-night-warm: #3d1e14;
+
+  /* ---------- Semantic ---------- */
+  --s-ink: var(--c-maroon-deep);
+  --s-ink-soft: color-mix(in srgb, var(--c-maroon-deep) 74%, transparent);
+  --s-ink-faint: color-mix(in srgb, var(--c-maroon-deep) 48%, transparent);
   --s-on-dark: var(--c-ivory);
-  --s-on-dark-soft: color-mix(in srgb, var(--c-ivory) 76%, transparent);
-  --s-on-dark-faint: color-mix(in srgb, var(--c-ivory) 52%, transparent);
-  --s-rule: color-mix(in srgb, var(--c-gold) 42%, transparent);
-  --s-rule-dark: color-mix(in srgb, var(--c-navy) 20%, transparent);
+  --s-on-dark-soft: color-mix(in srgb, var(--c-ivory) 78%, transparent);
+  --s-on-dark-faint: color-mix(in srgb, var(--c-ivory) 54%, transparent);
+  --s-rule: color-mix(in srgb, var(--c-brass) 44%, transparent);
+  --s-rule-soft: color-mix(in srgb, var(--c-brass) 22%, transparent);
+  --s-rule-dark: color-mix(in srgb, var(--c-brass-light) 30%, transparent);
 
-  /* ---------- Typography ---------- */
+  /* ---------- Typography ----------
+     Script for the ceremonial title of a section, serif for
+     names and dates, sans for anything a guest has to read
+     quickly — a time, a label, a button. */
+  --f-script: 'Great Vibes', 'Snell Roundhand', 'Apple Chancery', cursive;
   --f-display: 'Cormorant Garamond', 'Didot', 'Georgia', 'Times New Roman', serif;
   --f-sans: 'Jost', 'Futura', 'Avenir Next', 'Helvetica Neue', system-ui, sans-serif;
 
-  /* Fluid type scale — min at 360px, max at 1440px */
+  /* Fluid scale — min at 360px, max at 1440px */
   --t-eyebrow: clamp(0.62rem, 0.52rem + 0.42vw, 0.82rem);
   --t-label: clamp(0.72rem, 0.65rem + 0.3vw, 0.88rem);
-  --t-body: clamp(1rem, 0.94rem + 0.3vw, 1.18rem);
-  --t-lead: clamp(1.15rem, 1rem + 0.75vw, 1.6rem);
-  --t-h3: clamp(1.5rem, 1.2rem + 1.4vw, 2.4rem);
-  --t-h2: clamp(2.1rem, 1.5rem + 2.8vw, 4rem);
-  --t-h1: clamp(3rem, 1.6rem + 6.6vw, 8.4rem);
-  --t-mono-date: clamp(0.85rem, 0.72rem + 0.6vw, 1.12rem);
+  --t-body: clamp(1rem, 0.94rem + 0.3vw, 1.14rem);
+  --t-lead: clamp(1.12rem, 1rem + 0.7vw, 1.55rem);
+  --t-h3: clamp(1.45rem, 1.2rem + 1.3vw, 2.3rem);
+  --t-h2: clamp(2.4rem, 1.6rem + 3.4vw, 4.6rem);   /* script titles run small for their point size */
+  --t-h1: clamp(2.6rem, 1.5rem + 5.6vw, 7.2rem);
+  --t-numeral: clamp(1.9rem, 1.3rem + 2.6vw, 3.4rem);
 
   --ls-eyebrow: 0.42em;
   --ls-label: 0.26em;
   --ls-display: 0.02em;
   --ls-nav: 0.18em;
 
-  --lh-tight: 1.02;
+  --lh-tight: 1.04;
   --lh-snug: 1.25;
-  --lh-body: 1.75;
+  --lh-body: 1.72;
 
-  /* ---------- Spacing scale ---------- */
+  /* ---------- Spacing ---------- */
   --sp-2xs: 0.25rem;
   --sp-xs: 0.5rem;
   --sp-sm: 0.875rem;
   --sp-md: 1.5rem;
   --sp-lg: 2.5rem;
   --sp-xl: 4rem;
-  --sp-2xl: 4.5rem;
-  --sp-3xl: 7rem;
+  --sp-2xl: 5.5rem;
+  --sp-3xl: 8rem;
   --sp-gutter: clamp(1.25rem, 5vw, 6rem);
-  --sp-section: clamp(3rem, 7vh, 6.5rem);
+  --sp-section: clamp(3.5rem, 8vh, 7.5rem);
   --w-measure: 34rem;
-  --w-content: 78rem;
+  --w-content: 76rem;
 
-  /* ---------- Motion ---------- */
-  --d-instant: 180ms;
-  --d-quick: 420ms;
-  --d-base: 900ms;
-  --d-slow: 1500ms;
-  --d-cinematic: 2400ms;
-  --d-epic: 3600ms;
+  /* ---------- Motion ----------
+     Four registers, and every animation on the site belongs to
+     exactly one of them. */
+  --d-instant: 180ms;   /* buttons, hover, small state    */
+  --d-quick: 420ms;     /* cards, small reveals           */
+  --d-base: 700ms;      /* section and image reveals      */
+  --d-slow: 1200ms;     /* ceremonial reveals             */
+  --d-cinematic: 2200ms;/* the opening, major transitions */
+  --d-ambient: 9s;      /* light, drift, petals           */
 
   --e-out: cubic-bezier(0.22, 0.61, 0.36, 1);
   --e-soft: cubic-bezier(0.33, 0.02, 0.16, 1);
@@ -98,15 +124,17 @@
   --e-drift: cubic-bezier(0.45, 0, 0.25, 1);
 
   /* ---------- Depth ---------- */
-  --sh-lift: 0 24px 60px -28px color-mix(in srgb, var(--c-navy-deep) 55%, transparent);
-  --sh-card: 0 18px 48px -24px color-mix(in srgb, var(--c-navy) 42%, transparent);
-  --sh-glow-warm: 0 0 60px 12px color-mix(in srgb, var(--c-flame) 26%, transparent);
-  --sh-glow-cool: 0 0 120px 40px color-mix(in srgb, var(--c-blue-french) 22%, transparent);
+  --sh-lift: 0 24px 60px -30px color-mix(in srgb, var(--c-maroon-deep) 42%, transparent);
+  --sh-card: 0 14px 40px -26px color-mix(in srgb, var(--c-maroon-deep) 34%, transparent);
+  --sh-plate: 0 2px 3px -1px color-mix(in srgb, var(--c-maroon-deep) 12%, transparent),
+              0 22px 50px -32px color-mix(in srgb, var(--c-maroon-deep) 40%, transparent);
+  --sh-lamp: 0 0 70px 18px color-mix(in srgb, var(--c-flame) 22%, transparent);
 
   --r-none: 0;
   --r-sm: 2px;
+  --r-plate: 10px;
   --r-pill: 999px;
-  --r-arch: 50% 50% 6px 6px / 62% 62% 6px 6px;
+  --r-arch: 50% 50% 4px 4px / 58% 58% 4px 4px;
 
   /* ---------- Layers ---------- */
   --z-backdrop: 0;
@@ -117,16 +145,16 @@
   --z-chrome: 60;
   --z-overlay: 80;
 
-  /* ---------- Atmosphere (animated by scroll via JS) ---------- */
-  --atm-top: var(--c-blue-powder);
-  --atm-mid: var(--c-blue-mist);
+  /* ---------- Atmosphere (written by JS from scroll position) ---------- */
+  --atm-top: var(--c-sandal);
+  --atm-mid: var(--c-paper);
   --atm-base: var(--c-ivory);
-  --atm-warmth: 0.35;      /* 0 = cold moonlight, 1 = warm lamplight */
-  --atm-depth: 0.25;       /* 0 = daylight,       1 = deep evening   */
+  --atm-warmth: 0.35;   /* 0 = flat daylight, 1 = full lamplight */
+  --atm-depth: 0.25;    /* 0 = morning,       1 = deep evening   */
 }
 
-/* Wide tracking is an editorial luxury a 390px frame cannot afford —
-   at phone widths it turns every label into three ragged lines. */
+/* Editorial tracking is a luxury a 390px frame cannot afford — at
+   phone widths it turns every label into three ragged lines. */
 @media (max-width: 599px) {
   :root {
     --ls-eyebrow: 0.26em;
@@ -136,8 +164,8 @@
 }
 
 /* ---------- Breakpoints (documented; used via media queries) ----------
-   sm  ≤ 599px   phone
-   md  600–899px tablet portrait
-   lg  900–1279px tablet landscape / laptop
-   xl  ≥ 1280px  desktop
+   sm  ≤ 599px    phone          (375 / 390 / 414)
+   md  600–899px  tablet portrait (768)
+   lg  900–1279px laptop          (1024)
+   xl  ≥ 1280px   desktop         (1280 / 1440 / 1920)
    --------------------------------------------------------------------- */

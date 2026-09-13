@@ -1,57 +1,93 @@
-import { memo } from 'react';
+import { memo, useMemo } from 'react';
 
 type Props = {
   size?: number;
-  /** Draws the kolam on as the section arrives, as if being laid by hand. */
+  /** Lays the kolam on stroke by stroke, the way rice flour is actually put down. */
   drawn?: boolean;
+  /** Milliseconds before the first stroke. */
+  delay?: number;
   className?: string;
   style?: React.CSSProperties;
 };
 
+/** 3–5–7–5–3 pulli, the classic diamond lattice. */
+const ROWS = [3, 5, 7, 5, 3];
+const STEP = 21;
+const CX = 100;
+const CY = 100;
+
 /**
- * A pulli kolam — dot lattice with a continuous looping line around it.
- * Drawn rather than placed: the stroke traces itself when the scene
- * arrives, the way rice flour is actually laid at a threshold.
+ * A sikku kolam: pulli (dots) laid in a diamond lattice, with the
+ * kambi — the line — woven around them.
+ *
+ * Deliberately *not* radial. A ring of petals around a centre is a
+ * mandala, which belongs to a different tradition; a sikku kolam is
+ * an interlaced line travelling around a dot grid, and the difference
+ * is the whole point of having it here. The loops are rounded squares
+ * set on the diagonal and overlapping their neighbours, which is what
+ * produces the woven look when they cross.
+ *
+ * This is the only thing on the site that is literally drawn, and it
+ * earns that because a kolam *is* a drawing — made of line, at a
+ * threshold, by hand. So it is drawn on rather than faded in.
  */
-function KolamBase({ size = 260, drawn = false, className = '', style }: Props) {
-  const dots: Array<[number, number]> = [];
-  for (let r = 0; r < 5; r++) {
-    const count = 5 - Math.abs(r - 2) * 2 + 2;
-    for (let c = 0; c < count; c++) {
-      dots.push([100 + (c - (count - 1) / 2) * 30, 40 + r * 30]);
-    }
-  }
+function KolamBase({ size = 260, drawn = false, delay = 0, className = '', style }: Props) {
+  const { dots, loops } = useMemo(() => {
+    const dots: Array<[number, number]> = [];
+    ROWS.forEach((count, r) => {
+      for (let c = 0; c < count; c++) {
+        dots.push([CX + (c - (count - 1) / 2) * STEP, CY + (r - (ROWS.length - 1) / 2) * STEP]);
+      }
+    });
+
+    // A loop sits on each dot of the inner lattice. Overlapping at the
+    // corners is what makes the line read as woven rather than stacked.
+    const loops = dots.filter(([x, y]) => {
+      const d = Math.abs(x - CX) / STEP + Math.abs(y - CY) / STEP;
+      return d <= 2.01;
+    });
+
+    return { dots, loops };
+  }, []);
+
+  // A rounded square on the diagonal, sized to just reach its neighbours.
+  const arm = STEP * 0.95;
+  const bow = STEP * 0.52;
+  const loop =
+    `M 0 ${-arm} ` +
+    `C ${bow} ${-arm + bow}, ${arm - bow} ${-bow}, ${arm} 0 ` +
+    `C ${arm - bow} ${bow}, ${bow} ${arm - bow}, 0 ${arm} ` +
+    `C ${-bow} ${arm - bow}, ${-arm + bow} ${bow}, ${-arm} 0 ` +
+    `C ${-arm + bow} ${-bow}, ${-bow} ${-arm + bow}, 0 ${-arm} Z`;
 
   return (
     <div
       className={`kolam u-decor ${drawn ? 'is-drawn' : ''} ${className}`}
-      style={{ width: size, height: size, ...style }}
+      style={{ width: size, height: size, '--kolam-delay': `${delay}ms`, ...style } as React.CSSProperties}
       aria-hidden="true"
     >
       <svg viewBox="0 0 200 200" fill="none" role="presentation">
         {dots.map(([x, y], i) => (
-          <circle key={i} cx={x} cy={y} r={1.9} fill="currentColor" opacity={0.45} />
+          <circle key={i} cx={x} cy={y} r={1.5} fill="currentColor" opacity={0.4} />
         ))}
-        <g className="kolam__line" stroke="currentColor" strokeWidth={1.5} fill="none" strokeLinecap="round" strokeLinejoin="round">
-          {/* Outer ring of loops — the line turns around each edge dot
-              and comes back, the way a sikku kolam is actually drawn. */}
-          {Array.from({ length: 12 }, (_, i) => (
+
+        <g
+          className="kolam__line"
+          stroke="currentColor"
+          strokeWidth={1.35}
+          fill="none"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
+          {loops.map(([x, y], i) => (
             <path
-              key={`o${i}`}
-              d="M100 26 Q116 44 100 62 Q84 44 100 26 Z"
-              transform={`rotate(${i * 30} 100 100)`}
+              key={i}
+              pathLength={100}
+              style={{ '--stroke-index': i } as React.CSSProperties}
+              d={loop}
+              transform={`translate(${x} ${y})`}
             />
           ))}
-          {/* Inner lotus */}
-          {Array.from({ length: 8 }, (_, i) => (
-            <path
-              key={`i${i}`}
-              d="M100 62 Q113 78 100 92 Q87 78 100 62 Z"
-              transform={`rotate(${i * 45} 100 100)`}
-            />
-          ))}
-          <circle cx={100} cy={100} r={9} />
-          <circle cx={100} cy={100} r={3.4} />
         </g>
       </svg>
     </div>

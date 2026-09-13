@@ -1,66 +1,106 @@
 import { Scene, SceneContent, SceneLayer } from '../ui/Scene';
+import { ScriptTitle } from '../ui/ScriptTitle';
 import { Reveal } from '../ui/Reveal';
-import { JasmineGarland } from '../scenery/JasmineGarland';
-import { FlowerCluster } from '../scenery/FlowerCluster';
-import { KuthuVilakku } from '../scenery/KuthuVilakku';
-import { Kolam } from '../scenery/Kolam';
-import { Haze } from '../scenery/Haze';
+import { Lamplight } from '../scenery/Lamplight';
+import { Petals } from '../scenery/Petals';
 import { useReveal } from '../../hooks/useReveal';
-import { story } from '../../data/wedding';
+import { firstMessages, story } from '../../data/wedding';
 
 /**
- * The quiet room.
+ * Six chapters, told down the page.
  *
- * After the entrance the camera steps into somewhere much stiller.
- * Almost nothing here moves; the type carries the scene, and the
- * flowers stay at the edges of the frame where they belong.
+ * The chapters alternate sides against a single brass thread that
+ * draws itself down the middle as the visitor descends — one line,
+ * scaled on Y, which is the whole spine of the section. Nothing
+ * moves at the same moment as anything else: the numeral, the
+ * title and the line each arrive on their own delay, so a chapter
+ * assembles rather than appearing.
  */
 export function Story() {
-  const { ref: kolamRef, revealed: kolamIn } = useReveal<HTMLDivElement>({ threshold: 0.3 });
+  const { ref: threadRef, revealed: threadIn } = useReveal<HTMLDivElement>({ threshold: 0.2 });
 
   return (
-    <Scene id="story" light="ivory" label="Their story" className="story">
+    <Scene id="story" light="blush" label="Our love story">
       <SceneLayer depth="back">
-        <Haze from="centre" tone="ivory" strength={0.8} />
+        <Lamplight from="left" strength={0.22} spread={1.3} phase={5.2} flicker={false} />
+      </SceneLayer>
+      <SceneLayer depth="front">
+        <Petals count={6} seed={71} tone="jasmine" />
       </SceneLayer>
 
-      <SceneLayer depth="mid" stage>
-        <div className="story__drape u-layer" data-depth="mid">
-          <JasmineGarland strands={4} length={340} width={130} seed={51} className="story__garland story__garland--left" />
-          <JasmineGarland strands={3} length={280} width={110} seed={57} accent="blue" className="story__garland story__garland--right" />
-        </div>
-        <KuthuVilakku height={210} phase={0.9} className="story__lamp" />
-      </SceneLayer>
+      <SceneContent className="story">
+        <ScriptTitle eyebrow="Our journey">Our love story</ScriptTitle>
 
-      <SceneLayer depth="front" stage>
-        <div className="story__corner u-layer" data-depth="fore">
-          <FlowerCluster count={20} seed={63} palette="ivory" size={240} className="story__cluster" />
-        </div>
-      </SceneLayer>
+        <FirstMessages />
 
-      <SceneContent className="story__content">
-        <Reveal as="h2" variant="fade" className="u-eyebrow story__eyebrow">
-          Their story
-        </Reveal>
+        <div ref={threadRef} className={`story__chapters ${threadIn ? 'is-in' : ''}`}>
+          <span className="story__thread" aria-hidden="true" />
 
-        <div className="story__beats">
-          {story.map((beat, i) => (
-            <article key={beat.eyebrow} className="story__beat">
-              <Reveal variant="fade" delay={0} className="story__beat-eyebrow">
-                <span className="u-label">{beat.eyebrow}</span>
+          {story.map((chapter, i) => (
+            <article
+              key={chapter.numeral}
+              className={`story__chapter story__chapter--${i % 2 === 0 ? 'start' : 'end'}`}
+            >
+              <Reveal variant="focus" className="story__numeral-wrap">
+                <span className="story__numeral u-display" aria-hidden="true">
+                  {chapter.numeral}
+                </span>
               </Reveal>
-              <Reveal as="p" variant="focus" delay={140} className="story__line u-display">
-                {beat.line}
-              </Reveal>
-              {i < story.length - 1 && <span className="story__rule" aria-hidden="true" />}
+
+              <div className="story__body">
+                <Reveal variant="rise" delay={80}>
+                  <p className="story__eyebrow u-eyebrow">{chapter.eyebrow}</p>
+                </Reveal>
+                <Reveal variant="rise" delay={160}>
+                  <h3 className="story__title u-script">{chapter.title}</h3>
+                </Reveal>
+                <Reveal variant="rise" delay={260}>
+                  <p className="story__line u-serif-body">{chapter.line}</p>
+                </Reveal>
+              </div>
             </article>
           ))}
         </div>
-
-        <div ref={kolamRef} className="story__threshold">
-          <Kolam size={200} drawn={kolamIn} />
-        </div>
       </SceneContent>
     </Scene>
+  );
+}
+
+/**
+ * The first few messages, kept.
+ *
+ * Set as a folded sheet of paper rather than as a chat application:
+ * ivory ground, maroon ink, a gold rule at the fold. The lines
+ * arrive one after another on a stagger, which does the work a
+ * typing indicator would do without borrowing the furniture of a
+ * messaging app.
+ */
+function FirstMessages() {
+  const { ref, revealed } = useReveal<HTMLDivElement>({ threshold: 0.18 });
+
+  return (
+    <div ref={ref} className={`began ${revealed ? 'is-in' : ''}`}>
+      <Reveal variant="rise">
+        <p className="began__eyebrow u-eyebrow">{firstMessages.eyebrow}</p>
+      </Reveal>
+      <Reveal variant="rise" delay={100}>
+        <p className="began__line u-serif-body">{firstMessages.line}</p>
+      </Reveal>
+
+      <div className="began__sheet">
+        <ol className="began__thread">
+          {firstMessages.thread.map((message, i) => (
+            <li
+              key={i}
+              className={`began__message began__message--${message.from}`}
+              style={{ '--message-index': i } as React.CSSProperties}
+            >
+              <span className="began__bubble">{message.text}</span>
+            </li>
+          ))}
+        </ol>
+        <p className="began__footer u-script">{firstMessages.footer}</p>
+      </div>
+    </div>
   );
 }

@@ -22,12 +22,19 @@ export function Navigation() {
     // Section positions come from the engine's cache. Measuring seven
     // sections every frame — while every scenery layer writes its own
     // transform — was forcing seven reflows a frame on its own.
+    // The menu is ordered for reading — Our story, Events, Gallery —
+    // but the album comes before the schedule in the document. The
+    // "last one passed" test below only holds if these are in document
+    // order, so sort them into it rather than trusting the menu.
     const sections = navLinks
       .map((link) => {
         const el = document.getElementById(link.id);
-        return el ? { id: link.id, geometry: createGeometryCache(el) } : null;
+        return el ? { id: link.id, el, geometry: createGeometryCache(el) } : null;
       })
-      .filter((s): s is { id: string; geometry: (e: number) => { top: number; height: number } } => s !== null);
+      .filter((s): s is { id: string; el: HTMLElement; geometry: (e: number) => { top: number; height: number } } => s !== null)
+      .sort((a, b) =>
+        a.el.compareDocumentPosition(b.el) & Node.DOCUMENT_POSITION_FOLLOWING ? -1 : 1,
+      );
 
     return subscribe(({ y, vh, epoch, progress }) => {
       setLifted(y > vh * 0.55);
@@ -39,15 +46,17 @@ export function Navigation() {
         progressRef.current.style.transform = `scaleX(${progress.toFixed(4)})`;
       }
 
-      // Whichever scene owns the middle of the screen owns the nav.
+      // Whichever scene owns the middle of the screen owns the nav —
+      // and in the gaps between them (bridges, and the sections that
+      // are not nav targets) the last one passed keeps it, rather than
+      // falling back to Home as though the visitor had returned to the
+      // top of the page.
       const middle = y + vh * 0.5;
-      let current = 'hero';
+      let current = sections[0]?.id ?? 'hero';
       for (const section of sections) {
-        const { top, height } = section.geometry(epoch);
-        if (top <= middle && top + height > middle) {
-          current = section.id;
-          break;
-        }
+        const { top } = section.geometry(epoch);
+        if (top <= middle) current = section.id;
+        else break;
       }
       setActive(current);
     });

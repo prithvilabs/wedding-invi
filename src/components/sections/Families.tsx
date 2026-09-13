@@ -1,57 +1,38 @@
 import { Scene, SceneContent, SceneLayer } from '../ui/Scene';
+import { ScriptTitle } from '../ui/ScriptTitle';
 import { Reveal } from '../ui/Reveal';
-import { Pillar } from '../scenery/Pillar';
-import { FlowerCluster } from '../scenery/FlowerCluster';
-import { Thoranam } from '../scenery/Thoranam';
-import { KuthuVilakku } from '../scenery/KuthuVilakku';
-import { Haze } from '../scenery/Haze';
+import { Lamplight } from '../scenery/Lamplight';
 import { families, familiesIntro } from '../../data/wedding';
 
 /**
- * Symmetry, because that is how the families are seated.
+ * The two houses, set side by side and given exactly equal weight —
+ * same card, same width, same type, no visual seniority either way.
+ * On a phone they stack, groom first, which is the order they are
+ * read aloud.
  *
- * Two matched sides under one thoranam. Names are left to the family
- * to supply — nothing here is invented, and the layout holds its
- * composition whether a side lists nobody or four elders.
+ * Each card is a sheet of invitation paper: ivory, a hairline brass
+ * border inset from the edge, and a small brass mark where an
+ * engraved card would have one.
  */
 export function Families() {
-
   return (
-    <Scene id="families" light="daylight" label="The families" className="families">
+    <Scene id="families" light="sage" label="The families">
       <SceneLayer depth="back">
-        <Haze from="centre" tone="ivory" strength={0.7} />
+        <Lamplight from="above" strength={0.24} spread={1.3} phase={4.4} flicker={false} />
       </SceneLayer>
 
-      <SceneLayer depth="architecture" stage>
-        <div className="families__hall u-layer" data-depth="back">
-          <Pillar side="left" seed={71} width={110} className="families__pillar" />
-          <Pillar side="right" seed={77} width={110} className="families__pillar" />
-        </div>
-        <Thoranam swags={8} seed={83} />
-      </SceneLayer>
+      <SceneContent className="families">
+        <ScriptTitle eyebrow="With love">The families</ScriptTitle>
 
-      <SceneLayer depth="front" stage>
-        <FlowerCluster count={20} seed={89} palette="ivory" size={210} className="families__cluster families__cluster--left" />
-        <FlowerCluster count={20} seed={97} palette="blue" size={210} className="families__cluster families__cluster--right" />
-      </SceneLayer>
-
-      <SceneContent className="families__content">
-        <Reveal as="h2" variant="fade" className="u-eyebrow">
-          With the blessings of
+        <Reveal variant="fade" delay={120}>
+          <p className="families__intro u-serif-body">{familiesIntro}</p>
         </Reveal>
 
-        <Reveal as="p" variant="rise" delay={160} className="families__intro u-display">
-          {familiesIntro}
-        </Reveal>
-
-        <div className="families__grid">
+        <div className="families__pair">
           {families.map((family, i) => (
-            <Reveal key={family.side} variant="rise" delay={280 + i * 140} className="families__side">
-              <span className="families__ornament" aria-hidden="true">
-                <KuthuVilakku height={110} phase={i * 1.1} glow={false} />
-              </span>
-              <p className="families__label u-label">{family.side}</p>
-              <p className="families__for u-display">{family.forWhom}</p>
+            <Reveal key={family.side} as="article" variant="settle" delay={i * 130} className="families__card">
+              <p className="families__side u-eyebrow">{family.side}</p>
+              <span className="families__mark" aria-hidden="true" />
 
               {family.names.length > 0 ? (
                 <ul className="families__names">
@@ -62,8 +43,6 @@ export function Families() {
                   ))}
                 </ul>
               ) : (
-                /* Placeholder, not filler — replace `names` in
-                   src/data/wedding.ts and this disappears. */
                 <p className="families__pending u-label">{family.note}</p>
               )}
             </Reveal>

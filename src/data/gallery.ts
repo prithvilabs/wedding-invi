@@ -25,10 +25,10 @@ export type GalleryItem = {
 export const galleryNote = 'Photographs to follow';
 
 export const galleryItems: readonly GalleryItem[] = [
-  { id: 'g1', src: null, alt: 'Photograph of Prithvi Raj and Harshini', span: 'tall', tilt: -2.5, depth: 0.75 },
-  { id: 'g2', src: null, alt: 'Photograph of Prithvi Raj and Harshini', span: 'wide', tilt: 1.5, depth: 0.35 },
-  { id: 'g3', src: null, alt: 'Photograph of Prithvi Raj and Harshini', span: 'small', tilt: 3, depth: 0.9 },
-  { id: 'g4', src: null, alt: 'Photograph of Prithvi Raj and Harshini', span: 'small', tilt: -3.5, depth: 0.5 },
-  { id: 'g5', src: null, alt: 'Photograph of Prithvi Raj and Harshini', span: 'tall', tilt: 2, depth: 0.65 },
-  { id: 'g6', src: null, alt: 'Photograph of Prithvi Raj and Harshini', span: 'wide', tilt: -1.5, depth: 0.25 },
+  { id: 'g1', src: null, alt: 'Photograph of Prithvi Raj and Harshini', caption: 'Our first picture together', span: 'tall', tilt: -2.2, depth: 0.75 },
+  { id: 'g2', src: null, alt: 'Photograph of Prithvi Raj and Harshini', span: 'wide', tilt: 1.4, depth: 0.3 },
+  { id: 'g3', src: null, alt: 'Photograph of Prithvi Raj and Harshini', span: 'small', tilt: 2.6, depth: 0.9 },
+  { id: 'g4', src: null, alt: 'Photograph of Prithvi Raj and Harshini', span: 'small', tilt: -3.1, depth: 0.5 },
+  { id: 'g5', src: null, alt: 'Photograph of Prithvi Raj and Harshini', span: 'tall', tilt: 1.8, depth: 0.65 },
+  { id: 'g6', src: null, alt: 'Photograph of Prithvi Raj and Harshini', caption: 'Somewhere between two time zones', span: 'wide', tilt: -1.3, depth: 0.22 },
 ];

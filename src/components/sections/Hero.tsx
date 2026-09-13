@@ -1,106 +1,110 @@
 import { useEffect, useState } from 'react';
 import { Scene, SceneContent, SceneLayer } from '../ui/Scene';
 import { ScrollIndicator } from '../layout/ScrollIndicator';
-import { Pillar } from '../scenery/Pillar';
-import { Gopuram } from '../scenery/Gopuram';
-import { JasmineGarland } from '../scenery/JasmineGarland';
-import { FloralArch } from '../scenery/FloralArch';
-import { KuthuVilakku } from '../scenery/KuthuVilakku';
+import { Lamplight } from '../scenery/Lamplight';
+import { Silk } from '../scenery/Silk';
 import { FlowerCluster } from '../scenery/FlowerCluster';
-import { Thoranam } from '../scenery/Thoranam';
 import { Haze } from '../scenery/Haze';
 import { Bokeh } from '../scenery/Bokeh';
 import { Petals } from '../scenery/Petals';
 import { useParallax } from '../../hooks/useParallax';
-import { couple, events } from '../../data/wedding';
+import { couple, wedding } from '../../data/wedding';
 
 /**
- * The entrance.
+ * The hero, composed as a wedding poster rather than as a page.
  *
- * The camera stands at the mouth of the mandapam: towers behind,
- * pillars either side, a floral arch overhead, lamps at the feet of
- * the frame. The venue arrives before the names do — architecture,
- * then flowers, then light, then the couple — because that is the
- * order in which you would actually notice a room.
+ * Depth is built optically, not out of props: a silk ground that
+ * barely moves, haze to separate it from the middle distance,
+ * out-of-focus lamplight in the plane behind the type, jasmine
+ * gathered into the two lower corners in front of it, and the names
+ * held dead still on the one plane that never drifts.
+ *
+ * Nothing here is a picture of a mandapam. It is the light and the
+ * cloth of one, which is what a photograph of the real thing would
+ * have given us anyway.
  */
 export function Hero({ begin }: { begin: boolean }) {
   const [stage, setStage] = useState(0);
 
+  /* Seven beats, and the order is the order you would actually take
+     a room in: the light, then the cloth, then the flowers, then
+     the people. CSS holds every duration, so none of this renders
+     more than seven times in total. */
   useEffect(() => {
     if (!begin) return;
-    // Ten beats. The venue arrives before the couple does —
-    // architecture, then flowers, then light, then the names — which
-    // is the order you would actually notice a room in. CSS holds the
-    // timing, so none of this re-renders.
-    const timers = [0, 340, 700, 1080, 1460, 1860, 2280, 2720, 3160, 3600].map((ms, i) =>
-      window.setTimeout(() => setStage(i + 1), ms),
-    );
+    const marks = [0, 260, 560, 880, 1220, 1560, 1900];
+    const timers = marks.map((ms, i) => window.setTimeout(() => setStage(i + 1), ms));
     return () => timers.forEach(window.clearTimeout);
   }, [begin]);
 
-  const farRef = useParallax<HTMLDivElement>({ speed: -0.08, maxShift: 90 });
-  const midRef = useParallax<HTMLDivElement>({ speed: -0.16, zoom: 0.04, maxShift: 140 });
-  const nearRef = useParallax<HTMLDivElement>({ speed: 0.18, maxShift: 200, disableBelow: 600 });
-  const foreRef = useParallax<HTMLDivElement>({ speed: 0.34, maxShift: 260, disableBelow: 900 });
+  /* Five planes, five speeds. Every value is small — the largest is
+     under a fifth of the scroll distance — because parallax that can
+     be noticed as parallax has already gone too far. */
+  const groundRef = useParallax<HTMLDivElement>({ speed: -0.05, maxShift: 70 });
+  const clothRef = useParallax<HTMLDivElement>({ speed: -0.1, zoom: 0.03, maxShift: 110 });
+  const lightRef = useParallax<HTMLDivElement>({ speed: -0.14, maxShift: 130, disableBelow: 600 });
+  const flowersRef = useParallax<HTMLDivElement>({ speed: 0.15, maxShift: 180, disableBelow: 600 });
+  const nearRef = useParallax<HTMLDivElement>({ speed: 0.2, maxShift: 200, disableBelow: 900 });
 
   return (
-    <Scene id="hero" light="entrance" full label="Prithvi Raj and Harshini" className={`hero stage-${stage}`}>
-      {/* Distance: the temple skyline, held behind the haze */}
+    <Scene
+      id="hero"
+      light="dawn"
+      full
+      label={`${couple.one} and ${couple.two}`}
+      className={`hero stage-${stage}`}
+    >
+      {/* Furthest: the wall the morning is falling on. */}
       <SceneLayer depth="back">
-        <div ref={farRef} className="hero__skyline u-layer">
-          <Gopuram depth={2} tiers={7} className="hero__gopuram hero__gopuram--left" />
-          <Gopuram depth={2} tiers={6} className="hero__gopuram hero__gopuram--right" />
-        </div>
-        <Bokeh count={7} seed={4} />
-        <Haze from="top" tone="blue" strength={0.9} />
+        <div ref={groundRef} className="hero__ground u-layer" />
+        <Bokeh count={6} seed={4} />
+        <Haze from="top" tone="ivory" strength={0.85} />
       </SceneLayer>
 
-      {/* The hall: pillars and the arch the camera will pass through */}
+      {/* The cloth the whole composition is cut from. */}
       <SceneLayer depth="architecture">
-        <div ref={midRef} className="hero__hall u-layer">
-          <Pillar side="left" dressed seed={12} width={140} className="hero__pillar" />
-          <Pillar side="right" dressed seed={19} width={140} className="hero__pillar" />
-          <FloralArch palette="jasmine" density={70} seed={23} built={stage >= 3} className="hero__arch" />
+        <div ref={clothRef} className="hero__cloth u-layer">
+          <Silk tone="kumkum" strength={0.28} angle={14} />
         </div>
-        <Thoranam swags={6} seed={31} />
       </SceneLayer>
 
-      {/* Lamplight, and the flowers it reaches */}
-      <SceneLayer depth="mid" className="hero__lamps">
-        <KuthuVilakku height={320} phase={0} className="hero__lamp hero__lamp--left" />
-        <KuthuVilakku height={320} phase={1.7} className="hero__lamp hero__lamp--right" />
+      {/* Lamplight, low and to both sides, out of step with itself. */}
+      <SceneLayer depth="mid">
+        <div ref={lightRef} className="hero__light u-layer">
+          <Lamplight from="bottom-left" strength={0.6} spread={1.05} phase={0} />
+          <Lamplight from="bottom-right" strength={0.34} spread={0.8} phase={4.1} />
+        </div>
       </SceneLayer>
 
-      {/* Foreground: jasmine hanging into frame, flowers at the corners */}
+      {/* Jasmine and marigold, gathered at the corners the way flowers
+          are actually banked at the foot of a stage. */}
       <SceneLayer depth="front">
-        <div ref={nearRef} className="hero__foliage u-layer">
-          <JasmineGarland strands={6} length={480} width={190} seed={2} accent="blue" className="hero__garland hero__garland--left" />
-          <JasmineGarland strands={6} length={430} width={190} seed={8} accent="both" className="hero__garland hero__garland--right" />
-          <FlowerCluster count={30} seed={14} palette="ivory" size={300} className="hero__cluster hero__cluster--left" />
-          <FlowerCluster count={26} seed={27} palette="blue" size={270} className="hero__cluster hero__cluster--right" />
+        <div ref={flowersRef} className="hero__flowers u-layer">
+          <FlowerCluster count={26} seed={14} palette="ivory" size={300} className="hero__cluster hero__cluster--left" />
+          <FlowerCluster count={22} seed={27} palette="warm" size={270} className="hero__cluster hero__cluster--right" />
         </div>
-        <div ref={foreRef} className="hero__near u-layer">
-          <FlowerCluster count={18} seed={44} palette="mixed" size={340} className="hero__cluster hero__cluster--near" />
+        <div ref={nearRef} className="hero__near u-layer">
+          <FlowerCluster count={14} seed={44} palette="mixed" size={340} className="hero__cluster hero__cluster--near" />
         </div>
-        <Petals count={10} seed={6} />
+        <Petals count={9} seed={6} tone="jasmine" />
       </SceneLayer>
 
-      <Haze from="bottom" tone="warm" strength={0.55} />
+      <Haze from="bottom" tone="warm" strength={0.5} />
 
       <SceneContent className="hero__content">
-        <p className="hero__eyebrow u-eyebrow">{couple.togetherWith}</p>
+        <p className="hero__eyebrow u-eyebrow">{couple.headline}</p>
 
         <h1 className="hero__names">
           <span className="hero__name u-display">{couple.one}</span>
-          <span className="hero__amp u-display" aria-hidden="true">
-            {couple.ampersand}
+          <span className="hero__amp" aria-hidden="true">
+            <span className="hero__amp-mark">{couple.ampersand}</span>
           </span>
           <span className="u-visually-hidden">and</span>
           <span className="hero__name u-display">{couple.two}</span>
         </h1>
 
         <p className="hero__date u-label">
-          <time dateTime={events.wedding.dateISO}>{events.wedding.dateDisplay}</time>
+          <time dateTime={wedding.dateISO}>{wedding.dateLong}</time>
         </p>
 
         <ScrollIndicator />

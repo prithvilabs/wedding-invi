@@ -3,7 +3,7 @@ import { memo } from 'react';
 export type BlossomVariant =
   | 'jasmine'
   | 'rose'
-  | 'bluebell'
+  | 'arali'
   | 'marigold'
   | 'kanakambaram'
   | 'bud'

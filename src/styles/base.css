@@ -1,3 +1,4 @@
+@import './fonts.css';
 @import './tokens.css';
 
 *,
@@ -13,7 +14,7 @@ html {
 
 body {
   margin: 0;
-  background: var(--c-navy-deep);
+  background: var(--c-night);
   color: var(--s-ink);
   font-family: var(--f-sans);
   font-size: var(--t-body);
@@ -58,14 +59,14 @@ a {
 }
 
 :focus-visible {
-  outline: 2px solid var(--c-gold);
+  outline: 2px solid var(--c-brass);
   outline-offset: 4px;
   border-radius: var(--r-sm);
 }
 
 ::selection {
-  background: color-mix(in srgb, var(--c-blue-dusty) 60%, transparent);
-  color: var(--c-navy-deep);
+  background: color-mix(in srgb, var(--c-turmeric) 48%, transparent);
+  color: var(--c-maroon-deep);
 }
 
 /* ---------- Typographic primitives ---------- */
@@ -101,6 +102,15 @@ a {
   max-width: var(--w-measure);
 }
 
+.u-script {
+  font-family: var(--f-script);
+  font-weight: 400;
+  /* Great Vibes sits low and small for its point size; it needs the
+     extra leading or its descenders collide with the line beneath. */
+  line-height: 1.34;
+  letter-spacing: 0.01em;
+}
+
 .u-serif-body {
   font-family: var(--f-display);
   font-size: var(--t-lead);
@@ -131,7 +141,7 @@ a {
   z-index: var(--z-overlay);
   padding: var(--sp-sm) var(--sp-md);
   background: var(--c-ivory);
-  color: var(--c-navy-deep);
+  color: var(--c-maroon-deep);
   border: 1px solid var(--s-rule);
   transition: translate var(--d-quick) var(--e-out);
 }

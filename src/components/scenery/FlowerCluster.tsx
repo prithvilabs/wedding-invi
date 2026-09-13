@@ -5,7 +5,7 @@ import { seeded } from './rng';
 type Props = {
   count?: number;
   seed?: number;
-  palette?: 'ivory' | 'blue' | 'warm' | 'mixed';
+  palette?: 'ivory' | 'blush' | 'warm' | 'mixed';
   size?: number;
   className?: string;
   style?: React.CSSProperties;
@@ -29,14 +29,14 @@ function FlowerClusterBase({
 
   const pick = (r: number): BlossomVariant => {
     switch (palette) {
-      case 'blue':
-        return r > 0.55 ? 'bluebell' : r > 0.9 ? 'bud' : 'jasmine';
+      case 'blush':
+        return r > 0.55 ? 'arali' : r > 0.9 ? 'bud' : 'jasmine';
       case 'warm':
         return r > 0.78 ? 'marigold' : r > 0.58 ? 'kanakambaram' : 'jasmine';
       case 'mixed':
-        return r > 0.9 ? 'marigold' : r > 0.76 ? 'bluebell' : r > 0.56 ? 'rose' : 'jasmine';
+        return r > 0.86 ? 'marigold' : r > 0.72 ? 'arali' : r > 0.54 ? 'rose' : 'jasmine';
       default:
-        return r > 0.88 ? 'bluebell' : r > 0.66 ? 'rose' : r > 0.54 ? 'bud' : 'jasmine';
+        return r > 0.88 ? 'arali' : r > 0.66 ? 'rose' : r > 0.54 ? 'bud' : 'jasmine';
     }
   };
 

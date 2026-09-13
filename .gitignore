@@ -6,3 +6,7 @@ dist
 
 # TypeScript incremental build info
 *.tsbuildinfo
+
+# Python bytecode from the bundled skill tooling
+__pycache__/
+*.pyc
