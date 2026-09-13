@@ -1,5 +1,6 @@
-import type { ReactNode } from 'react';
+import { useEffect, type ReactNode } from 'react';
 import { useSceneProgress } from '../../hooks/useSceneProgress';
+import { invalidate } from '../../hooks/scrollEngine';
 
 type Props = {
   id: string;
@@ -18,6 +19,17 @@ type Props = {
  */
 export function Scene({ id, light, label, full = false, className = '', children }: Props) {
   const ref = useSceneProgress<HTMLElement>();
+
+  // A scene skipped by content-visibility has no laid-out children, so
+  // any geometry cached while it was skipped is stale. Re-measure the
+  // moment it starts rendering again.
+  useEffect(() => {
+    const el = ref.current;
+    if (!el || !('oncontentvisibilityautostatechange' in el)) return;
+    const onChange = () => invalidate();
+    el.addEventListener('contentvisibilityautostatechange', onChange);
+    return () => el.removeEventListener('contentvisibilityautostatechange', onChange);
+  }, [ref]);
 
   return (
     <section

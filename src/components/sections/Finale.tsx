@@ -9,9 +9,8 @@ import { Gopuram } from '../scenery/Gopuram';
 import { Kolam } from '../scenery/Kolam';
 import { Petals } from '../scenery/Petals';
 import { Haze } from '../scenery/Haze';
-import { useParallax } from '../../hooks/useParallax';
 import { useReveal } from '../../hooks/useReveal';
-import { couple, events, finale, rsvp } from '../../data/wedding';
+import { couple, events, finale, gifts, rsvp } from '../../data/wedding';
 
 /**
  * The invitation itself.
@@ -23,8 +22,6 @@ import { couple, events, finale, rsvp } from '../../data/wedding';
  * the hero, closing the loop.
  */
 export function Finale() {
-  const archHolderRef = useParallax<HTMLDivElement>({ speed: -0.12, zoom: 0.04, maxShift: 120 });
-  const foreRef = useParallax<HTMLDivElement>({ speed: 0.3, maxShift: 220, disableBelow: 600 });
   const { ref: archRef, revealed: archBuilt } = useReveal<HTMLDivElement>({ threshold: 0.12 });
   const { ref: kolamRef, revealed: kolamIn } = useReveal<HTMLDivElement>({ threshold: 0.35 });
 
@@ -38,7 +35,7 @@ export function Finale() {
       </SceneLayer>
 
       <SceneLayer depth="architecture" stage>
-        <div ref={archHolderRef} className="finale__hall u-layer">
+        <div className="finale__hall u-layer" data-depth="back">
           <Pillar side="left" dressed seed={229} width={130} className="finale__pillar" />
           <Pillar side="right" dressed seed={233} width={130} className="finale__pillar" />
           <div ref={archRef} className="finale__arch-holder">
@@ -53,7 +50,7 @@ export function Finale() {
       </SceneLayer>
 
       <SceneLayer depth="front" stage>
-        <div ref={foreRef} className="finale__foreground u-layer">
+        <div className="finale__foreground u-layer" data-depth="near">
           <JasmineGarland strands={5} length={380} width={160} seed={241} accent="both" className="finale__garland finale__garland--left" />
           <JasmineGarland strands={5} length={340} width={160} seed={251} accent="blue" className="finale__garland finale__garland--right" />
           <FlowerCluster count={28} seed={257} palette="mixed" size={280} className="finale__cluster finale__cluster--left" />
@@ -68,14 +65,14 @@ export function Finale() {
         </Reveal>
 
         <h2 className="finale__names">
-          <Reveal as="span" variant="rise" delay={180} className="finale__name u-display">
+          <Reveal as="span" variant="curtain" delay={180} className="finale__name u-display">
             {couple.one}
           </Reveal>
           <Reveal as="span" variant="fade" delay={440} className="finale__amp u-display">
             <span aria-hidden="true">{couple.ampersand}</span>
             <span className="u-visually-hidden">and</span>
           </Reveal>
-          <Reveal as="span" variant="rise" delay={700} className="finale__name u-display">
+          <Reveal as="span" variant="curtain" delay={700} className="finale__name u-display">
             {couple.two}
           </Reveal>
         </h2>
@@ -102,6 +99,8 @@ export function Finale() {
           <p className="finale__rsvp-status u-label" role="status">
             {rsvp.status}
           </p>
+
+          {gifts.show && <p className="finale__gifts u-serif-body">{gifts.note}</p>}
         </Reveal>
 
         <div ref={kolamRef} className="finale__threshold">

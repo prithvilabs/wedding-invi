@@ -4,7 +4,7 @@ import { useReveal } from '../../hooks/useReveal';
 type Props = {
   as?: ElementType;
   /** How the element arrives. */
-  variant?: 'rise' | 'focus' | 'settle' | 'fade' | 'draw';
+  variant?: 'rise' | 'focus' | 'settle' | 'fade' | 'draw' | 'curtain';
   /** Milliseconds. Stagger a group by passing increasing delays. */
   delay?: number;
   threshold?: number;
@@ -28,7 +28,7 @@ export function Reveal({
   className = '',
   children,
 }: Props) {
-  const { ref, revealed } = useReveal<HTMLElement>(threshold === undefined ? {} : { threshold });
+  const { ref, revealed } = useReveal<HTMLElement>({ threshold });
 
   return (
     <Tag

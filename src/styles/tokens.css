@@ -77,10 +77,10 @@
   --sp-md: 1.5rem;
   --sp-lg: 2.5rem;
   --sp-xl: 4rem;
-  --sp-2xl: 6.5rem;
-  --sp-3xl: 10rem;
+  --sp-2xl: 4.5rem;
+  --sp-3xl: 7rem;
   --sp-gutter: clamp(1.25rem, 5vw, 6rem);
-  --sp-section: clamp(5rem, 12vh, 11rem);
+  --sp-section: clamp(3rem, 7vh, 6.5rem);
   --w-measure: 34rem;
   --w-content: 78rem;
 

@@ -94,7 +94,7 @@ export function Journey() {
         <Reveal variant="fade">
           <p className="u-eyebrow journey__eyebrow">{journey.eyebrow}</p>
         </Reveal>
-        <Reveal as="h2" variant="rise" delay={140} className="journey__title u-display">
+        <Reveal as="h2" variant="curtain" delay={140} className="journey__title u-display">
           {journey.title}
         </Reveal>
 

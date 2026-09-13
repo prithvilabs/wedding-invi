@@ -15,7 +15,6 @@ import { galleryItems, galleryNote, type GalleryItem } from '../../data/gallery'
  * album the way they would on a table.
  */
 export function Gallery() {
-  const garlandRef = useParallax<HTMLDivElement>({ speed: 0.28, maxShift: 200, disableBelow: 900 });
 
   return (
     <Scene id="gallery" light="ivory" label="Photographs" className="gallery">
@@ -24,7 +23,7 @@ export function Gallery() {
       </SceneLayer>
 
       <SceneLayer depth="front" stage>
-        <div ref={garlandRef} className="gallery__drape u-layer">
+        <div className="gallery__drape u-layer" data-depth="fore">
           <JasmineGarland strands={4} length={300} width={130} seed={199} className="gallery__garland gallery__garland--left" />
           <JasmineGarland strands={3} length={250} width={110} seed={211} accent="blue" className="gallery__garland gallery__garland--right" />
         </div>

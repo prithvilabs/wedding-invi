@@ -17,13 +17,15 @@ export const couple = {
 } as const;
 
 export const events = {
-  /* CONFIRMED: 28 January 2027 */
+  /* CONFIRMED: 28 January 2027, Chennai (city confirmed on the printed card;
+     venue and muhurtham are still to come). */
   wedding: {
     id: 'wedding',
     label: 'The Wedding',
     dateISO: '2027-01-28',
     dateDisplay: '28 January 2027',
     dateLong: 'Thursday, the twenty-eighth of January, two thousand twenty-seven',
+    city: 'Chennai',
     /* Not yet confirmed — keep exactly as written until the family says otherwise. */
     detailsPlaceholder: 'Wedding details to follow',
   },
@@ -112,6 +114,14 @@ export const rsvp = {
   body: 'Invitations and a way to reply will be shared here soon. Until then, please keep the dates.',
   status: 'RSVP opening soon',
   buttonLabel: 'RSVP',
+} as const;
+
+/* ---------- Gifts ----------
+   The couple's own words, from the printed invitation. Set `show` to
+   false to drop the note without deleting it. */
+export const gifts = {
+  show: true,
+  note: 'We didn’t register for gifts, but if you’re feeling generous, our bank account is always open!',
 } as const;
 
 export const finale = {

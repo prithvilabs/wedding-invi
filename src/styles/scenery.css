@@ -10,7 +10,9 @@
 .garland {
   position: absolute;
   top: 0;
-  filter: drop-shadow(0 14px 22px color-mix(in srgb, var(--c-navy) 26%, transparent));
+  /* No drop-shadow here: the strands sway, and a filter over moving
+     content re-rasterises the whole bunch every frame. The blossoms
+     carry their own stroke, which is what reads as depth anyway. */
 }
 
 .garland__strand {
@@ -34,7 +36,6 @@
   inset-inline: -2%;
   top: 0;
   height: clamp(52px, 8vw, 108px);
-  filter: drop-shadow(0 8px 14px color-mix(in srgb, var(--c-navy) 22%, transparent));
 }
 
 .thoranam svg {
@@ -54,7 +55,8 @@
 
 .vilakku {
   position: relative;
-  filter: drop-shadow(0 20px 30px color-mix(in srgb, var(--c-navy-deep) 42%, transparent));
+  /* The flame flickers inside this box — the lamp's own pool of light
+     gives it depth without a filter over moving content. */
 }
 
 .vilakku svg {
@@ -185,7 +187,6 @@
 .arch {
   position: absolute;
   inset: 0;
-  filter: drop-shadow(0 18px 34px color-mix(in srgb, var(--c-navy) 24%, transparent));
 }
 
 .arch svg {
@@ -319,7 +320,6 @@
   position: absolute;
   inset: 0;
   overflow: hidden;
-  filter: blur(14px);
 }
 
 .bokeh__light {
@@ -331,11 +331,21 @@
 }
 
 .bokeh__light.is-warm {
-  background: radial-gradient(circle, var(--c-flame) 0%, transparent 70%);
+  background: radial-gradient(
+    circle,
+    var(--c-flame) 0%,
+    color-mix(in srgb, var(--c-flame) 55%, transparent) 30%,
+    transparent 72%
+  );
 }
 
 .bokeh__light.is-cool {
-  background: radial-gradient(circle, var(--c-blue-powder) 0%, transparent 70%);
+  background: radial-gradient(
+    circle,
+    var(--c-blue-powder) 0%,
+    color-mix(in srgb, var(--c-blue-powder) 55%, transparent) 30%,
+    transparent 72%
+  );
 }
 
 /* ---------- Mobile: keep the venue, simplify the foreground ---------- */
@@ -343,7 +353,7 @@
 @media (max-width: 599px) {
   /* Deep foreground detail becomes clutter at this width — the
      architecture and flowers stay, the extra depth planes go. */
-  .bokeh { filter: blur(20px); opacity: 0.6; }
+  .bokeh { opacity: 0.6; }
   .cluster { filter: none; }
   .pillar { filter: none; }
 }

@@ -9,7 +9,6 @@ import { Thoranam } from '../scenery/Thoranam';
 import { Kolam } from '../scenery/Kolam';
 import { Petals } from '../scenery/Petals';
 import { Haze } from '../scenery/Haze';
-import { useParallax } from '../../hooks/useParallax';
 import { useReveal } from '../../hooks/useReveal';
 import { events } from '../../data/wedding';
 
@@ -24,8 +23,6 @@ import { events } from '../../data/wedding';
  * the family's exact words until there are real ones.
  */
 export function Wedding() {
-  const hallRef = useParallax<HTMLDivElement>({ speed: -0.14, zoom: 0.05, maxShift: 150 });
-  const garlandRef = useParallax<HTMLDivElement>({ speed: 0.26, maxShift: 240, disableBelow: 600 });
   const { ref: archRef, revealed: archBuilt } = useReveal<HTMLDivElement>({ threshold: 0.15 });
   const { ref: kolamRef, revealed: kolamIn } = useReveal<HTMLDivElement>({ threshold: 0.4 });
 
@@ -37,7 +34,7 @@ export function Wedding() {
       </SceneLayer>
 
       <SceneLayer depth="architecture" stage>
-        <div ref={hallRef} className="wedding__hall u-layer">
+        <div className="wedding__hall u-layer" data-depth="back">
           <Pillar side="left" dressed seed={113} width={150} className="wedding__pillar" />
           <Pillar side="right" dressed seed={127} width={150} className="wedding__pillar" />
           <div ref={archRef} className="wedding__arch-holder">
@@ -55,7 +52,7 @@ export function Wedding() {
       </SceneLayer>
 
       <SceneLayer depth="front" stage>
-        <div ref={garlandRef} className="wedding__drape u-layer">
+        <div className="wedding__drape u-layer" data-depth="fore">
           {/* Positioned along the flanks only — the centre of the
               mandapam is kept clear for the date. */}
           {[2, 9, 16, 84, 91, 98].map((left, i) => (
@@ -80,12 +77,16 @@ export function Wedding() {
           {events.wedding.label}
         </Reveal>
 
-        <Reveal as="p" variant="rise" delay={180} className="wedding__date u-display">
+        <Reveal as="p" variant="curtain" delay={180} className="wedding__date u-display">
           <time dateTime={events.wedding.dateISO}>{events.wedding.dateDisplay}</time>
         </Reveal>
 
         <Reveal variant="fade" delay={340} className="wedding__long">
           <p className="u-label">{events.wedding.dateLong}</p>
+        </Reveal>
+
+        <Reveal variant="rise" delay={420} className="wedding__place">
+          <span className="wedding__city u-display">{events.wedding.city}</span>
         </Reveal>
 
         <Reveal variant="settle" delay={480} className="wedding__pending">

@@ -6,7 +6,6 @@ import { FlowerCluster } from '../scenery/FlowerCluster';
 import { JasmineGarland } from '../scenery/JasmineGarland';
 import { Bokeh } from '../scenery/Bokeh';
 import { Haze } from '../scenery/Haze';
-import { useParallax } from '../../hooks/useParallax';
 import { useReveal } from '../../hooks/useReveal';
 import { events } from '../../data/wedding';
 
@@ -20,8 +19,6 @@ import { events } from '../../data/wedding';
  * the largest thing in the scene after the date.
  */
 export function Reception() {
-  const drapeRef = useParallax<HTMLDivElement>({ speed: -0.16, maxShift: 140 });
-  const foreRef = useParallax<HTMLDivElement>({ speed: 0.24, maxShift: 200, disableBelow: 600 });
   const { ref: archRef, revealed: archBuilt } = useReveal<HTMLDivElement>({ threshold: 0.18 });
 
   return (
@@ -33,7 +30,7 @@ export function Reception() {
 
       {/* Muted royal-blue fabric, falling behind the arch */}
       <SceneLayer depth="architecture" stage>
-        <div ref={drapeRef} className="reception__drapery u-layer">
+        <div className="reception__drapery u-layer" data-depth="back">
           <svg viewBox="0 0 1200 700" preserveAspectRatio="none" role="presentation">
             {Array.from({ length: 9 }, (_, i) => (
               <path
@@ -56,7 +53,7 @@ export function Reception() {
       </SceneLayer>
 
       <SceneLayer depth="front" stage>
-        <div ref={foreRef} className="reception__foreground u-layer">
+        <div className="reception__foreground u-layer" data-depth="fore">
           <JasmineGarland strands={3} length={260} width={110} seed={173} accent="blue" className="reception__garland reception__garland--left" />
           <JasmineGarland strands={3} length={230} width={110} seed={179} accent="blue" className="reception__garland reception__garland--right" />
           <FlowerCluster count={26} seed={181} palette="ivory" size={280} className="reception__cluster reception__cluster--left" />
@@ -69,11 +66,11 @@ export function Reception() {
           {events.reception.label}
         </Reveal>
 
-        <Reveal as="p" variant="rise" delay={160} className="reception__date u-display">
+        <Reveal as="p" variant="curtain" delay={160} className="reception__date u-display">
           <time dateTime={events.reception.dateISO}>{events.reception.dateDisplay}</time>
         </Reveal>
 
-        <Reveal variant="rise" delay={320} className="reception__venue">
+        <Reveal variant="curtain" delay={320} className="reception__venue">
           <span className="reception__venue-name u-display">{events.reception.venue}</span>
           <span className="reception__venue-city u-label">{events.reception.city}</span>
         </Reveal>

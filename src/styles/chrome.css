@@ -174,6 +174,23 @@
   }
 }
 
+/* How far through the invitation the visitor has come. One hairline,
+   the width of the frame — enough to make a long scroll feel finite. */
+.nav__progress {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -1px;
+  height: 1px;
+  background: linear-gradient(to right, var(--c-gold-deep), var(--c-gold-soft));
+  transform: scaleX(0);
+  transform-origin: left;
+  opacity: 0;
+  transition: opacity var(--d-base) var(--e-out);
+}
+
+.nav.is-lifted .nav__progress { opacity: 0.9; }
+
 /* ---------- Scroll cue ---------- */
 
 /* The cue sits low in the hero, where the light has already turned
@@ -284,3 +301,147 @@
 }
 
 .footer__line { color: var(--s-ink-faint); }
+
+/* ---------- The doorway ----------
+   The one deliberate cut in the site: a closed door that opens onto
+   the mandapam. It sits above everything, opens itself after a beat,
+   and is removed from the document once it is out of frame.
+   ---------------------------------------------------------------- */
+
+.blossom-sprite {
+  position: absolute;
+  width: 0;
+  height: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.doorway {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-overlay);
+  overflow: hidden;
+  pointer-events: none;
+  background: var(--c-navy-deep);
+  transition: background-color var(--d-cinematic) var(--e-soft);
+}
+
+.doorway.is-opening {
+  background-color: transparent;
+}
+
+/* The carved wall the doors are set into, and its threshold. */
+.doorway__wall {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 60% 40% at 50% 100%, color-mix(in srgb, var(--c-flame) 18%, transparent), transparent 70%),
+    linear-gradient(to bottom, #101f36, #1b3252 45%, #26405f);
+  transition: opacity var(--d-cinematic) var(--e-soft);
+}
+
+.doorway__lamp {
+  position: absolute;
+  bottom: 6%;
+}
+
+.doorway__lamp--left { left: clamp(1rem, 9vw, 9rem); }
+.doorway__lamp--right { right: clamp(1rem, 9vw, 9rem); }
+
+.doorway__garland { top: 0; opacity: 0.8; }
+.doorway__garland--left { left: clamp(0.5rem, 6vw, 6rem); }
+.doorway__garland--right { right: clamp(0.5rem, 6vw, 6rem); }
+
+.doorway__kolam {
+  position: absolute;
+  bottom: 2%;
+  left: 50%;
+  translate: -50% 0;
+  color: var(--c-gold);
+  opacity: 0.45;
+}
+
+/* The two panels. They swing from their outer edge rather than
+   sliding, so the light widens across the floor as they part. */
+.doorway__panel {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 50.5%;
+  transform-style: preserve-3d;
+  transition: transform 2200ms cubic-bezier(0.62, 0.02, 0.2, 1);
+  box-shadow: 0 0 90px color-mix(in srgb, var(--c-navy-deep) 80%, transparent);
+}
+
+.doorway__field { width: 100%; height: 100%; }
+
+.doorway__panel--left { left: 0; transform-origin: left center; }
+.doorway__panel--right { right: 0; transform-origin: right center; }
+
+.doorway.is-opening .doorway__panel--left { transform: perspective(1600px) rotateY(-86deg); }
+.doorway.is-opening .doorway__panel--right { transform: perspective(1600px) rotateY(86deg); }
+
+.doorway.is-opening .doorway__wall { opacity: 0; }
+
+.doorway__carving {
+  position: absolute;
+  left: 50%;
+  top: 31%;
+  width: min(44%, 250px);
+  aspect-ratio: 1;
+  translate: -50% -50%;
+  overflow: visible;
+}
+
+.doorway__carving--low {
+  top: 73%;
+  width: min(28%, 160px);
+}
+
+/* The handle sits on the meeting edge, so the two rings read as one
+   pair of doors rather than two separate panels. */
+.doorway__ring {
+  position: absolute;
+  top: 50%;
+  width: clamp(20px, 2.4vw, 34px);
+  aspect-ratio: 1;
+  border: 2px solid var(--c-gold);
+  border-radius: 50%;
+  opacity: 0.75;
+  translate: 0 -50%;
+}
+
+.doorway__panel--left .doorway__ring {
+  right: clamp(14px, 1.8vw, 30px);
+  left: auto;
+}
+
+.doorway__panel--right .doorway__ring {
+  left: clamp(14px, 1.8vw, 30px);
+  right: auto;
+}
+
+/* The light that spills through the widening gap. */
+.doorway__light {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 2px;
+  translate: -50% 0;
+  background: linear-gradient(to bottom, transparent, var(--c-flame-core), transparent);
+  opacity: 0;
+  transition:
+    opacity 900ms var(--e-out),
+    width 2200ms cubic-bezier(0.62, 0.02, 0.2, 1);
+}
+
+.doorway.is-opening .doorway__light {
+  opacity: 0.55;
+  width: 78vw;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  /* The doors are never shown at all — the visitor starts inside. */
+  .doorway { display: none; }
+}

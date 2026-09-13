@@ -3,7 +3,6 @@ import { Reveal } from '../ui/Reveal';
 import { Gopuram } from '../scenery/Gopuram';
 import { FlowerCluster } from '../scenery/FlowerCluster';
 import { Haze } from '../scenery/Haze';
-import { useParallax } from '../../hooks/useParallax';
 import { useReveal } from '../../hooks/useReveal';
 import { travel, travelNote } from '../../data/wedding';
 
@@ -16,7 +15,6 @@ import { travel, travelNote } from '../../data/wedding';
  * panel of logistics dropped into it.
  */
 export function Travel() {
-  const skylineRef = useParallax<HTMLDivElement>({ speed: -0.22, maxShift: 160 });
   const { ref: roadRef, revealed: roadDrawn } = useReveal<HTMLDivElement>({ threshold: 0.25 });
 
   return (
@@ -26,7 +24,7 @@ export function Travel() {
       </SceneLayer>
 
       <SceneLayer depth="architecture" stage>
-        <div ref={skylineRef} className="travel__skyline u-layer">
+        <div className="travel__skyline u-layer" data-depth="back">
           <Gopuram depth={2} tiers={6} className="travel__tower travel__tower--a" />
           <Gopuram depth={1} tiers={7} className="travel__tower travel__tower--b" />
           <Gopuram depth={2} tiers={5} className="travel__tower travel__tower--c" />

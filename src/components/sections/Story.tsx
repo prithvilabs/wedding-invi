@@ -5,7 +5,6 @@ import { FlowerCluster } from '../scenery/FlowerCluster';
 import { KuthuVilakku } from '../scenery/KuthuVilakku';
 import { Kolam } from '../scenery/Kolam';
 import { Haze } from '../scenery/Haze';
-import { useParallax } from '../../hooks/useParallax';
 import { useReveal } from '../../hooks/useReveal';
 import { story } from '../../data/wedding';
 
@@ -17,8 +16,6 @@ import { story } from '../../data/wedding';
  * flowers stay at the edges of the frame where they belong.
  */
 export function Story() {
-  const drapeRef = useParallax<HTMLDivElement>({ speed: -0.2, maxShift: 160, disableBelow: 600 });
-  const cornerRef = useParallax<HTMLDivElement>({ speed: 0.14, maxShift: 120, disableBelow: 900 });
   const { ref: kolamRef, revealed: kolamIn } = useReveal<HTMLDivElement>({ threshold: 0.3 });
 
   return (
@@ -28,7 +25,7 @@ export function Story() {
       </SceneLayer>
 
       <SceneLayer depth="mid" stage>
-        <div ref={drapeRef} className="story__drape u-layer">
+        <div className="story__drape u-layer" data-depth="mid">
           <JasmineGarland strands={4} length={340} width={130} seed={51} className="story__garland story__garland--left" />
           <JasmineGarland strands={3} length={280} width={110} seed={57} accent="blue" className="story__garland story__garland--right" />
         </div>
@@ -36,7 +33,7 @@ export function Story() {
       </SceneLayer>
 
       <SceneLayer depth="front" stage>
-        <div ref={cornerRef} className="story__corner u-layer">
+        <div className="story__corner u-layer" data-depth="fore">
           <FlowerCluster count={20} seed={63} palette="ivory" size={240} className="story__cluster" />
         </div>
       </SceneLayer>

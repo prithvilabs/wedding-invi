@@ -5,7 +5,6 @@ import { FlowerCluster } from '../scenery/FlowerCluster';
 import { Thoranam } from '../scenery/Thoranam';
 import { KuthuVilakku } from '../scenery/KuthuVilakku';
 import { Haze } from '../scenery/Haze';
-import { useParallax } from '../../hooks/useParallax';
 import { families, familiesIntro } from '../../data/wedding';
 
 /**
@@ -16,7 +15,6 @@ import { families, familiesIntro } from '../../data/wedding';
  * composition whether a side lists nobody or four elders.
  */
 export function Families() {
-  const archRef = useParallax<HTMLDivElement>({ speed: -0.12, maxShift: 110 });
 
   return (
     <Scene id="families" light="daylight" label="The families" className="families">
@@ -25,7 +23,7 @@ export function Families() {
       </SceneLayer>
 
       <SceneLayer depth="architecture" stage>
-        <div ref={archRef} className="families__hall u-layer">
+        <div className="families__hall u-layer" data-depth="back">
           <Pillar side="left" seed={71} width={110} className="families__pillar" />
           <Pillar side="right" seed={77} width={110} className="families__pillar" />
         </div>

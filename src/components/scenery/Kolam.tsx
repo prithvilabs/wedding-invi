@@ -32,18 +32,26 @@ function KolamBase({ size = 260, drawn = false, className = '', style }: Props) 
         {dots.map(([x, y], i) => (
           <circle key={i} cx={x} cy={y} r={1.9} fill="currentColor" opacity={0.45} />
         ))}
-        <g className="kolam__line" stroke="currentColor" strokeWidth={1.6} fill="none" strokeLinecap="round">
-          {[0, 45, 90, 135].map((a) => (
-            <ellipse key={a} cx={100} cy={100} rx={72} ry={26} transform={`rotate(${a} 100 100)`} />
-          ))}
-          <circle cx={100} cy={100} r={20} />
-          {[0, 60, 120, 180, 240, 300].map((a) => (
+        <g className="kolam__line" stroke="currentColor" strokeWidth={1.5} fill="none" strokeLinecap="round" strokeLinejoin="round">
+          {/* Outer ring of loops — the line turns around each edge dot
+              and comes back, the way a sikku kolam is actually drawn. */}
+          {Array.from({ length: 12 }, (_, i) => (
             <path
-              key={`p${a}`}
-              d="M100 80 Q114 66 100 50 Q86 66 100 80 Z"
-              transform={`rotate(${a} 100 100)`}
+              key={`o${i}`}
+              d="M100 26 Q116 44 100 62 Q84 44 100 26 Z"
+              transform={`rotate(${i * 30} 100 100)`}
             />
           ))}
+          {/* Inner lotus */}
+          {Array.from({ length: 8 }, (_, i) => (
+            <path
+              key={`i${i}`}
+              d="M100 62 Q113 78 100 92 Q87 78 100 62 Z"
+              transform={`rotate(${i * 45} 100 100)`}
+            />
+          ))}
+          <circle cx={100} cy={100} r={9} />
+          <circle cx={100} cy={100} r={3.4} />
         </g>
       </svg>
     </div>

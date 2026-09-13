@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { couple, navLinks } from '../../data/wedding';
-import { subscribe } from '../../hooks/scrollEngine';
+import { subscribe, createGeometryCache } from '../../hooks/scrollEngine';
 
 /**
  * Minimal floating navigation.
@@ -12,23 +12,40 @@ import { subscribe } from '../../hooks/scrollEngine';
  */
 export function Navigation() {
   const [lifted, setLifted] = useState(false);
+  const progressRef = useRef<HTMLSpanElement>(null);
   const [active, setActive] = useState('hero');
   const [open, setOpen] = useState(false);
   const panelRef = useRef<HTMLDivElement>(null);
   const toggleRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
-    return subscribe(({ y, vh }) => {
+    // Section positions come from the engine's cache. Measuring seven
+    // sections every frame — while every scenery layer writes its own
+    // transform — was forcing seven reflows a frame on its own.
+    const sections = navLinks
+      .map((link) => {
+        const el = document.getElementById(link.id);
+        return el ? { id: link.id, geometry: createGeometryCache(el) } : null;
+      })
+      .filter((s): s is { id: string; geometry: (e: number) => { top: number; height: number } } => s !== null);
+
+    return subscribe(({ y, vh, epoch, progress }) => {
       setLifted(y > vh * 0.55);
 
+      // How far through the invitation the visitor has come. Written
+      // straight to the element — a progress bar that re-rendered the
+      // navigation on every frame would be worse than none.
+      if (progressRef.current) {
+        progressRef.current.style.transform = `scaleX(${progress.toFixed(4)})`;
+      }
+
       // Whichever scene owns the middle of the screen owns the nav.
+      const middle = y + vh * 0.5;
       let current = 'hero';
-      for (const link of navLinks) {
-        const el = document.getElementById(link.id);
-        if (!el) continue;
-        const rect = el.getBoundingClientRect();
-        if (rect.top <= vh * 0.5 && rect.bottom > vh * 0.5) {
-          current = link.id;
+      for (const section of sections) {
+        const { top, height } = section.geometry(epoch);
+        if (top <= middle && top + height > middle) {
+          current = section.id;
           break;
         }
       }
@@ -69,6 +86,8 @@ export function Navigation() {
           <span />
         </span>
       </button>
+
+      <span ref={progressRef} className="nav__progress" aria-hidden="true" />
 
       <nav id="nav-menu" ref={panelRef} className="nav__menu" aria-label="Invitation sections">
         <ul className="nav__list">

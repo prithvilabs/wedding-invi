@@ -41,7 +41,14 @@
 
 /* ---------- Scene shell ---------- */
 
+/* Only one or two rooms are ever on screen. Skipping the rendering of
+   the rest is the single biggest saving in the site: the browser stops
+   rasterising eight scenes' worth of architecture and flowers it isn't
+   showing. `auto` on the intrinsic size makes it remember each scene's
+   real height once measured, so the scrollbar never jumps. */
 .scene {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 100svh;
   position: relative;
   isolation: isolate;
   overflow: clip;
@@ -63,6 +70,13 @@
   width: 100%;
   max-width: var(--w-content);
   margin-inline: auto;
+  /* The readable plane drifts a little against the room behind it, so
+     the camera has depth through the type as well as around it. */
+  translate: 0 calc((var(--scene-progress, 0.5) - 0.5) * -26px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .scene__content { translate: none; }
 }
 
 .scene__layer {
@@ -84,6 +98,35 @@
   top: 0;
   height: 100svh;
   width: 100%;
+}
+
+/* ---------- Depth inside a stage ----------
+   A staged layer is pinned, so it cannot take JS parallax without
+   fighting its own pin. Instead each plane drifts against the scene's
+   own progress: architecture eases back, foreground rides forward.
+   No listener, no layout read, no work on the main thread at all. */
+.scene__stage [data-depth] {
+  will-change: transform;
+}
+
+.scene__stage [data-depth='back'] {
+  translate: 0 calc((var(--scene-progress, 0.5) - 0.5) * -46px);
+}
+
+.scene__stage [data-depth='mid'] {
+  translate: 0 calc((var(--scene-progress, 0.5) - 0.5) * -20px);
+}
+
+.scene__stage [data-depth='fore'] {
+  translate: 0 calc((var(--scene-progress, 0.5) - 0.5) * 74px);
+}
+
+.scene__stage [data-depth='near'] {
+  translate: 0 calc((var(--scene-progress, 0.5) - 0.5) * 112px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .scene__stage [data-depth] { translate: none !important; }
 }
 
 /* Anything hung from the ceiling clears the navigation band. */
@@ -264,6 +307,22 @@
 .reveal--settle { opacity: 0; transform: translate3d(0, 14px, 0) scale(0.986); }
 .reveal--focus { opacity: 0; filter: blur(9px); transform: translate3d(0, 16px, 0); }
 .reveal--draw { opacity: 0; transform: scaleX(0); transform-origin: left; }
+
+/* A curtain lifting off the type. Reserved for the four or five lines
+   that carry the invitation — the names and the dates — where a fade
+   is too soft to feel like an arrival. */
+.reveal--curtain {
+  clip-path: inset(105% 0 -10% 0);
+  transform: translate3d(0, 18px, 0);
+  transition:
+    clip-path 1500ms var(--e-soft),
+    transform 1500ms var(--e-soft);
+  transition-delay: var(--reveal-delay, 0ms);
+}
+
+.reveal--curtain.is-revealed {
+  clip-path: inset(-10% 0 -10% 0);
+}
 
 .reveal.is-revealed {
   opacity: 1;
@@ -482,7 +541,7 @@
    STORY
    ============================================================= */
 
-.story { padding-block: calc(var(--sp-section) * 1.3); }
+.story { padding-block: calc(var(--sp-section) * 0.9); }
 
 .story__drape, .story__corner { position: absolute; inset: 0; }
 
@@ -503,7 +562,7 @@
   max-width: 62rem;
   display: grid;
   justify-items: center;
-  gap: var(--sp-xl);
+  gap: var(--sp-lg);
   text-align: center;
 }
 
@@ -511,23 +570,23 @@
 
 .story__beats {
   display: grid;
-  gap: var(--sp-2xl);
+  gap: var(--sp-lg);
   width: 100%;
 }
 
 .story__beat {
   display: grid;
   justify-items: center;
-  gap: var(--sp-md);
+  gap: var(--sp-sm);
   position: relative;
 }
 
 .story__beat-eyebrow { color: var(--c-gold-deep); }
 
 .story__line {
-  max-width: 30ch;
+  max-width: 34ch;
   font-size: var(--t-h3);
-  line-height: 1.45;
+  line-height: 1.4;
   color: var(--c-navy);
   font-weight: 300;
 }
@@ -535,8 +594,8 @@
 .story__rule {
   display: block;
   width: 1px;
-  height: var(--sp-lg);
-  margin-top: var(--sp-lg);
+  height: var(--sp-md);
+  margin-top: var(--sp-sm);
   background: linear-gradient(to bottom, var(--s-rule), transparent);
 }
 
@@ -617,7 +676,7 @@
    ============================================================= */
 
 .journey {
-  min-height: 190vh;
+  min-height: 112vh;
   align-items: flex-start;
 }
 
@@ -673,7 +732,7 @@
   justify-items: center;
   gap: var(--sp-lg);
   text-align: center;
-  padding-block: clamp(7rem, 18vh, 14rem) 14vh;
+  padding-block: clamp(5rem, 12vh, 8rem) 8vh;
   color: var(--s-on-dark);
 }
 
@@ -687,8 +746,8 @@
 
 .journey__place { display: grid; justify-items: center; gap: var(--sp-xs); }
 
-.journey__place--origin { margin-top: var(--sp-2xl); }
-.journey__place--destination { margin-top: 18vh; }
+.journey__place--origin { margin-top: var(--sp-xl); }
+.journey__place--destination { margin-top: 8vh; }
 
 .journey__place-name {
   font-size: var(--t-h3);
@@ -700,10 +759,10 @@
 
 .journey__beats {
   list-style: none;
-  margin: 18vh 0 0;
+  margin: 8vh 0 0;
   padding: 0;
   display: grid;
-  gap: clamp(6rem, 14vh, 12rem);
+  gap: clamp(2.5rem, 6vh, 5rem);
   max-width: 34rem;
 }
 
@@ -751,6 +810,12 @@
 }
 
 .wedding__long { color: var(--s-ink-faint); max-width: 30ch; }
+
+.wedding__city {
+  font-size: var(--t-h3);
+  color: var(--c-blue-muted);
+  letter-spacing: 0.16em;
+}
 
 .wedding__pending {
   display: grid;
@@ -919,7 +984,7 @@
    GALLERY
    ============================================================= */
 
-.gallery { padding-block: calc(var(--sp-section) * 1.1); }
+.gallery { padding-block: calc(var(--sp-section) * 0.9); }
 
 .gallery__drape { position: absolute; inset: 0; }
 .gallery__garland { opacity: 0.6; }
@@ -1015,7 +1080,7 @@
    FINALE
    ============================================================= */
 
-.finale { min-height: 100svh; padding-block: calc(var(--sp-section) * 1.1); }
+.finale { min-height: 100svh; padding-block: calc(var(--sp-section) * 0.9); }
 
 .finale__hall, .finale__foreground { position: absolute; inset: 0; }
 
@@ -1096,7 +1161,7 @@
   display: grid;
   justify-items: center;
   gap: var(--sp-sm);
-  margin-top: var(--sp-2xl);
+  margin-top: var(--sp-xl);
   padding: var(--sp-xl) clamp(1.5rem, 6vw, 4rem);
   max-width: 34rem;
   border: 1px solid var(--s-rule);
@@ -1116,7 +1181,17 @@
   color: var(--c-gold-deep);
 }
 
-.finale__threshold { margin-top: var(--sp-xl); color: var(--c-gold); }
+.finale__gifts {
+  margin-top: var(--sp-md);
+  padding-top: var(--sp-md);
+  border-top: 1px solid var(--s-rule);
+  color: var(--s-ink-soft);
+  font-size: var(--t-body);
+  font-style: italic;
+  max-width: 32ch;
+}
+
+.finale__threshold { margin-top: var(--sp-lg); color: var(--c-gold); }
 .finale__threshold .kolam { position: relative; }
 
 /* =============================================================
@@ -1125,7 +1200,7 @@
    ============================================================= */
 
 @media (max-width: 899px) {
-  .journey { min-height: 170vh; }
+  .journey { min-height: 128vh; }
 
   .gallery__plate:nth-child(odd) { grid-area: auto / 1 / auto / 7; margin: 0; justify-self: stretch; }
   .gallery__plate:nth-child(even) { grid-area: auto / 7 / auto / 13; margin: 0; justify-self: stretch; }

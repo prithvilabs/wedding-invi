@@ -26,7 +26,7 @@ type Props = {
  * room feel travelled rather than jumped.
  */
 export function SceneBridge({ variant, from, to, height = 44 }: Props) {
-  const { ref, revealed } = useReveal<HTMLDivElement>({ threshold: 0.05, rootMargin: '0px 0px -4% 0px' });
+  const { ref, revealed } = useReveal<HTMLDivElement>({ threshold: 0.02 });
   const driftRef = useParallax<HTMLDivElement>({ speed: -0.28, maxShift: 140, disableBelow: 600 });
   const foreRef = useParallax<HTMLDivElement>({ speed: 0.22, maxShift: 180, disableBelow: 900 });
 

@@ -1,27 +1,35 @@
 import { useEffect, useRef, useState } from 'react';
-import { invalidate } from './scrollEngine';
+import { subscribe, createGeometryCache } from './scrollEngine';
 
 export type RevealOptions = {
-  /** Fraction of the element that must be visible to trigger. */
+  /**
+   * How far into the viewport the element must come before it arrives,
+   * as a fraction of the viewport height. 0 fires at the very edge.
+   */
   threshold?: number;
-  /** Shrinks the viewport so a reveal fires just before the edge. */
-  rootMargin?: string;
   /** Reveal once and stay revealed — the default for an invitation. */
   once?: boolean;
 };
 
 /**
- * Viewport activation. Fast scrolling never leaves a section
- * half-animated: the observer fires on intersection regardless of
- * scroll speed, and because the revealed state is a class rather than
- * a running animation, a section scrolled past at speed simply lands
- * in its final state.
+ * Viewport activation, driven by the shared scroll engine.
+ *
+ * This deliberately does not use IntersectionObserver. Scenes are
+ * rendered with `content-visibility: auto`, and an observer target
+ * inside a skipped subtree never reports intersecting — so headings
+ * stayed hidden until something else forced a re-check. Geometry from
+ * the engine is correct either way, costs no extra layout read, and
+ * means the whole site runs on one scroll system rather than two.
+ *
+ * Fast scrolling never leaves a section half-animated: the revealed
+ * state is a class, not a running animation, so a scene passed at
+ * speed simply lands in its final state.
  */
 export function useReveal<T extends HTMLElement>({
-  threshold = 0.18,
-  rootMargin = '0px 0px -8% 0px',
+  threshold,
   once = true,
 }: RevealOptions = {}) {
+  const band = threshold ?? 0.12;
   const ref = useRef<T>(null);
   const [revealed, setRevealed] = useState(false);
 
@@ -29,30 +37,32 @@ export function useReveal<T extends HTMLElement>({
     const el = ref.current;
     if (!el) return;
 
-    // Without IntersectionObserver, everything is simply present.
-    if (typeof IntersectionObserver === 'undefined') {
-      setRevealed(true);
-      return;
-    }
+    const geometry = createGeometryCache(el);
+    let done = false;
 
-    const observer = new IntersectionObserver(
-      (entries) => {
-        for (const entry of entries) {
-          if (entry.isIntersecting) {
-            setRevealed(true);
-            invalidate();
-            if (once) observer.disconnect();
-          } else if (!once) {
-            setRevealed(false);
-          }
+    return subscribe(({ y, vh, epoch }) => {
+      if (done) return;
+      const { top, height } = geometry(epoch);
+      const margin = vh * band;
+
+      // "Has been reached", not "is on screen". A visitor who flings
+      // past a section faster than the engine ticks would otherwise
+      // leave it hidden for good; this way anything scrolled past is
+      // already in its finished state by the time they turn back.
+      const reached = top < y + vh - margin;
+
+      if (once) {
+        if (reached) {
+          setRevealed(true);
+          done = true;
         }
-      },
-      { threshold, rootMargin },
-    );
+        return;
+      }
 
-    observer.observe(el);
-    return () => observer.disconnect();
-  }, [threshold, rootMargin, once]);
+      const passed = top + height < y + margin;
+      setRevealed(reached && !passed);
+    });
+  }, [band, once]);
 
   return { ref, revealed };
 }

@@ -23,17 +23,20 @@ import { couple, events } from '../../data/wedding';
  * then flowers, then light, then the couple — because that is the
  * order in which you would actually notice a room.
  */
-export function Hero() {
+export function Hero({ begin }: { begin: boolean }) {
   const [stage, setStage] = useState(0);
 
   useEffect(() => {
-    // Ten beats, slow. Each beat unlocks the next tier of the
-    // composition; CSS holds the timing so nothing re-renders.
-    const timers = [120, 700, 1250, 1850, 2450, 3050, 3700, 4350, 5000, 5650].map((ms, i) =>
+    if (!begin) return;
+    // Ten beats. The venue arrives before the couple does —
+    // architecture, then flowers, then light, then the names — which
+    // is the order you would actually notice a room in. CSS holds the
+    // timing, so none of this re-renders.
+    const timers = [0, 340, 700, 1080, 1460, 1860, 2280, 2720, 3160, 3600].map((ms, i) =>
       window.setTimeout(() => setStage(i + 1), ms),
     );
     return () => timers.forEach(window.clearTimeout);
-  }, []);
+  }, [begin]);
 
   const farRef = useParallax<HTMLDivElement>({ speed: -0.08, maxShift: 90 });
   const midRef = useParallax<HTMLDivElement>({ speed: -0.16, zoom: 0.04, maxShift: 140 });

@@ -1,11 +1,14 @@
 import { useEffect, useRef } from 'react';
-import { subscribe } from './scrollEngine';
+import { subscribe, createGeometryCache } from './scrollEngine';
 
 /**
  * Writes a scene's own scroll progress onto the element as
  * `--scene-progress` (0 as it enters the viewport, 1 as it leaves).
- * CSS then drives lighting, haze and reveal depth from it — no React
- * renders, and the value is correct even if the visitor jumps.
+ *
+ * CSS then drives lighting, haze, drift and reveal depth from it — no
+ * React renders, no layout reads in the frame loop, and the value is
+ * correct even if the visitor jumps straight to the middle of a scene.
+ * Custom properties inherit, so every layer inside the scene can read it.
  */
 export function useSceneProgress<T extends HTMLElement>() {
   const ref = useRef<T>(null);
@@ -13,12 +16,14 @@ export function useSceneProgress<T extends HTMLElement>() {
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
+
+    const geometry = createGeometryCache(el);
     let last = Number.NaN;
 
-    return subscribe(({ vh }) => {
-      const rect = el.getBoundingClientRect();
-      const span = rect.height + vh;
-      const p = clamp01((vh - rect.top) / span);
+    return subscribe(({ y, vh, epoch }) => {
+      const { top, height } = geometry(epoch);
+      const span = height + vh;
+      const p = clamp01((y + vh - top) / span);
       if (Math.abs(p - last) < 0.002) return;
       last = p;
       el.style.setProperty('--scene-progress', p.toFixed(3));

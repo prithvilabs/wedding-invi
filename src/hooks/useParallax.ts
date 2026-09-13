@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import { subscribe } from './scrollEngine';
+import { subscribe, createGeometryCache } from './scrollEngine';
 import { useReducedMotion } from './useReducedMotion';
 
 export type ParallaxOptions = {
@@ -20,8 +20,17 @@ export type ParallaxOptions = {
 };
 
 /**
- * Attaches one element to the shared scroll engine. The element's
- * transform is written directly — React never re-renders for a scroll.
+ * Attaches one element to the shared scroll engine.
+ *
+ * Position comes from the engine's geometry cache rather than from
+ * `getBoundingClientRect` each frame: measuring inside the frame loop
+ * while sibling layers write transforms forces a reflow per layer per
+ * frame, which is what judder actually is. The element's transform is
+ * written directly — React never re-renders for a scroll.
+ *
+ * Only for layers that scroll with the document. A layer inside a
+ * `SceneLayer stage` is already pinned to the viewport; drift it from
+ * `--scene-progress` in CSS instead, or the two fight each other.
  */
 export function useParallax<T extends HTMLElement>({
   speed = -0.15,
@@ -38,19 +47,23 @@ export function useParallax<T extends HTMLElement>({
     if (!el || reduced) return;
     if (disableBelow && window.innerWidth < disableBelow) return;
 
+    const geometry = createGeometryCache(el);
     let lastY = Number.NaN;
     let lastX = Number.NaN;
 
-    return subscribe(({ y, vh }) => {
-      const rect = el.getBoundingClientRect();
+    return subscribe(({ y, vh, epoch }) => {
+      const { top, height } = geometry(epoch);
+
       // Centre of the element relative to the centre of the viewport,
       // normalised so −1 is one screen below and 1 is one screen above.
-      const centre = rect.top + rect.height / 2 - vh / 2;
+      const centre = top + height / 2 - y - vh / 2;
       const t = centre / vh;
+
+      // Off-screen layers cost nothing: skip the write entirely.
+      if (t < -2 || t > 2) return;
 
       const shiftY = clamp(t * speed * vh, -maxShift, maxShift);
       const shiftX = clamp(t * speedX * vh, -maxShift, maxShift);
-      const scale = 1 + t * zoom;
 
       // Sub-pixel writes are invisible but still cost a composite.
       if (Math.abs(shiftY - lastY) < 0.1 && Math.abs(shiftX - lastX) < 0.1) return;
@@ -59,8 +72,7 @@ export function useParallax<T extends HTMLElement>({
 
       el.style.transform =
         `translate3d(${shiftX.toFixed(2)}px, ${shiftY.toFixed(2)}px, 0)` +
-        (zoom ? ` scale(${scale.toFixed(4)})` : '');
-      void y;
+        (zoom ? ` scale(${(1 + t * zoom).toFixed(4)})` : '');
     });
   }, [speed, speedX, zoom, maxShift, disableBelow, reduced]);
 
