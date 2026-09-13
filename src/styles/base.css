@@ -1,0 +1,173 @@
+@import './tokens.css';
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--c-navy-deep);
+  color: var(--s-ink);
+  font-family: var(--f-sans);
+  font-size: var(--t-body);
+  line-height: var(--lh-body);
+  font-weight: 300;
+  overflow-x: clip;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* The whole document is one continuous camera move; no element may
+   push the viewport sideways. */
+#root {
+  overflow-x: clip;
+  position: relative;
+  isolation: isolate;
+}
+
+h1, h2, h3, h4, p, figure, blockquote {
+  margin: 0;
+  font-weight: inherit;
+  font-size: inherit;
+}
+
+img, svg {
+  display: block;
+  max-width: 100%;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+:focus-visible {
+  outline: 2px solid var(--c-gold);
+  outline-offset: 4px;
+  border-radius: var(--r-sm);
+}
+
+::selection {
+  background: color-mix(in srgb, var(--c-blue-dusty) 60%, transparent);
+  color: var(--c-navy-deep);
+}
+
+/* ---------- Typographic primitives ---------- */
+
+.u-eyebrow {
+  font-family: var(--f-sans);
+  font-size: var(--t-eyebrow);
+  letter-spacing: var(--ls-eyebrow);
+  text-transform: uppercase;
+  font-weight: 400;
+  line-height: 1.6;
+  /* letter-spacing adds trailing space; pull it back for optical centring */
+  text-indent: var(--ls-eyebrow);
+}
+
+.u-label {
+  font-family: var(--f-sans);
+  font-size: var(--t-label);
+  letter-spacing: var(--ls-label);
+  text-transform: uppercase;
+  font-weight: 400;
+  text-indent: var(--ls-label);
+}
+
+.u-display {
+  font-family: var(--f-display);
+  font-weight: 300;
+  letter-spacing: var(--ls-display);
+  line-height: var(--lh-tight);
+}
+
+.u-measure {
+  max-width: var(--w-measure);
+}
+
+.u-serif-body {
+  font-family: var(--f-display);
+  font-size: var(--t-lead);
+  font-weight: 300;
+  line-height: 1.6;
+}
+
+/* ---------- Utilities ---------- */
+
+.u-visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+.u-skip-link {
+  position: fixed;
+  top: var(--sp-md);
+  left: 50%;
+  translate: -50% -200%;
+  z-index: var(--z-overlay);
+  padding: var(--sp-sm) var(--sp-md);
+  background: var(--c-ivory);
+  color: var(--c-navy-deep);
+  border: 1px solid var(--s-rule);
+  transition: translate var(--d-quick) var(--e-out);
+}
+
+.u-skip-link:focus-visible {
+  translate: -50% 0;
+}
+
+/* Every decorative layer is inert to pointers and to assistive tech. */
+.u-decor {
+  pointer-events: none;
+  user-select: none;
+}
+
+/* GPU-friendly hint, applied only while a layer actually animates. */
+.u-layer {
+  will-change: transform;
+  backface-visibility: hidden;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  /* Reduced motion keeps every composition intact — it only stills
+     the camera. Nothing is hidden, nothing is restyled. */
+  *,
+  *::before,
+  *::after {
+    animation-duration: 1ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 1ms !important;
+  }
+
+  .u-layer {
+    will-change: auto;
+  }
+}

@@ -1,0 +1,349 @@
+/* =============================================================
+   SCENERY
+   Lighting, depth and organic movement for the physical elements
+   of the venue. Geometry lives in the components; everything that
+   makes it feel lit lives here.
+   ============================================================= */
+
+/* ---------- Jasmine garlands ---------- */
+
+.garland {
+  position: absolute;
+  top: 0;
+  filter: drop-shadow(0 14px 22px color-mix(in srgb, var(--c-navy) 26%, transparent));
+}
+
+.garland__strand {
+  animation: sway var(--sway-period, 8s) var(--e-inout) infinite alternate;
+  animation-delay: var(--sway-delay, 0s);
+}
+
+@keyframes sway {
+  from {
+    rotate: calc(var(--sway-amplitude, 1.5deg) * -1);
+  }
+  to {
+    rotate: var(--sway-amplitude, 1.5deg);
+  }
+}
+
+/* ---------- Thoranam ---------- */
+
+.thoranam {
+  position: absolute;
+  inset-inline: -2%;
+  top: 0;
+  height: clamp(52px, 8vw, 108px);
+  filter: drop-shadow(0 8px 14px color-mix(in srgb, var(--c-navy) 22%, transparent));
+}
+
+.thoranam svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.thoranam__leaves {
+  animation: sway 11s var(--e-inout) infinite alternate;
+  transform-origin: 50% 0;
+  --sway-amplitude: 0.5deg;
+}
+
+/* ---------- Kuthu vilakku ---------- */
+
+.vilakku {
+  position: relative;
+  filter: drop-shadow(0 20px 30px color-mix(in srgb, var(--c-navy-deep) 42%, transparent));
+}
+
+.vilakku svg {
+  width: 100%;
+  height: 100%;
+}
+
+/* The warm pool the flame throws — the lamp lights its surroundings,
+   it does not merely glow at them. */
+.vilakku__pool {
+  position: absolute;
+  left: 50%;
+  top: 8%;
+  width: 420%;
+  aspect-ratio: 1;
+  translate: -50% -34%;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    color-mix(in srgb, var(--c-flame) 30%, transparent) 0%,
+    color-mix(in srgb, var(--c-marigold) 13%, transparent) 32%,
+    transparent 68%
+  );
+  animation: lamp-breathe 5.5s var(--e-inout) infinite alternate;
+  animation-delay: var(--flame-phase, 0s);
+  pointer-events: none;
+}
+
+.vilakku__flame {
+  transform-origin: 60px 92px;
+  animation: flicker 2.6s var(--e-inout) infinite alternate;
+  animation-delay: var(--flame-phase, 0s);
+}
+
+@keyframes flicker {
+  0% {
+    transform: scale(1, 0.94) skewX(-1.6deg);
+    opacity: 0.88;
+  }
+  35% {
+    transform: scale(1.03, 1.06) skewX(1.4deg);
+    opacity: 1;
+  }
+  62% {
+    transform: scale(0.97, 1.01) skewX(-0.8deg);
+    opacity: 0.93;
+  }
+  100% {
+    transform: scale(1.02, 1.09) skewX(2deg);
+    opacity: 1;
+  }
+}
+
+@keyframes lamp-breathe {
+  from {
+    opacity: 0.72;
+    scale: 0.94;
+  }
+  to {
+    opacity: 1;
+    scale: 1.05;
+  }
+}
+
+/* ---------- Kolam ---------- */
+
+.kolam {
+  color: var(--c-gold);
+  opacity: 0.5;
+}
+
+.kolam svg {
+  width: 100%;
+  height: 100%;
+}
+
+.kolam__line * {
+  stroke-dasharray: 600;
+  stroke-dashoffset: 600;
+  transition: stroke-dashoffset var(--d-epic) var(--e-soft);
+}
+
+.kolam.is-drawn .kolam__line * {
+  stroke-dashoffset: 0;
+}
+
+/* Each loop of the kolam is laid after the one before it. */
+.kolam__line > *:nth-child(2) { transition-delay: 180ms; }
+.kolam__line > *:nth-child(3) { transition-delay: 360ms; }
+.kolam__line > *:nth-child(4) { transition-delay: 540ms; }
+.kolam__line > *:nth-child(n + 5) { transition-delay: 720ms; }
+
+/* ---------- Pillars ---------- */
+
+.pillar {
+  position: absolute;
+  bottom: 0;
+  filter: drop-shadow(0 0 40px color-mix(in srgb, var(--c-navy) 22%, transparent));
+}
+
+.pillar svg {
+  width: 100%;
+  height: 100%;
+}
+
+.pillar--left { left: 0; }
+.pillar--right { right: 0; scale: -1 1; }
+
+/* ---------- Gopuram ---------- */
+
+.gopuram {
+  position: absolute;
+  bottom: 0;
+}
+
+.gopuram svg {
+  width: 100%;
+  height: 100%;
+}
+
+/* Aerial perspective: the further tower is paler and softer. */
+.gopuram--d0 { color: color-mix(in srgb, var(--c-navy) 52%, transparent); filter: blur(0.4px); }
+.gopuram--d1 { color: color-mix(in srgb, var(--c-blue-muted) 34%, transparent); filter: blur(1.6px); }
+.gopuram--d2 { color: color-mix(in srgb, var(--c-blue-french) 20%, transparent); filter: blur(3.4px); }
+
+/* ---------- Floral arch ---------- */
+
+.arch {
+  position: absolute;
+  inset: 0;
+  filter: drop-shadow(0 18px 34px color-mix(in srgb, var(--c-navy) 24%, transparent));
+}
+
+.arch svg {
+  width: 100%;
+  height: 100%;
+}
+
+.arch__bloom {
+  opacity: 0;
+  transform: scale(0.55);
+  transform-box: fill-box;
+  transform-origin: center;
+  transition:
+    opacity var(--d-base) var(--e-out),
+    transform var(--d-base) var(--e-out);
+  /* Built from both feet up towards the crown, in a fixed span of
+     time however many flowers the arch carries. */
+  transition-delay: var(--bloom-delay, 0s);
+}
+
+.arch.is-built .arch__bloom {
+  opacity: 1;
+  transform: scale(1);
+}
+
+/* ---------- Clusters ---------- */
+
+.cluster {
+  position: absolute;
+  filter: drop-shadow(0 10px 20px color-mix(in srgb, var(--c-navy) 20%, transparent));
+}
+
+.cluster svg {
+  width: 100%;
+  height: 100%;
+}
+
+/* ---------- Haze ---------- */
+
+.haze {
+  position: absolute;
+  inset: 0;
+  z-index: var(--z-midground);
+}
+
+.haze--blue { --haze-a: var(--c-blue-dusty); --haze-b: var(--c-blue-powder); }
+.haze--warm { --haze-a: var(--c-gold-soft); --haze-b: var(--c-flame); }
+.haze--ivory { --haze-a: var(--c-ivory); --haze-b: var(--c-cream); }
+
+.haze--bottom {
+  background: linear-gradient(
+    to top,
+    color-mix(in srgb, var(--haze-a) calc(52% * var(--haze-strength, 1)), transparent),
+    color-mix(in srgb, var(--haze-b) calc(16% * var(--haze-strength, 1)), transparent) 34%,
+    transparent 68%
+  );
+}
+
+.haze--top {
+  background: linear-gradient(
+    to bottom,
+    color-mix(in srgb, var(--haze-a) calc(48% * var(--haze-strength, 1)), transparent),
+    transparent 62%
+  );
+}
+
+.haze--left {
+  background: linear-gradient(
+    to right,
+    color-mix(in srgb, var(--haze-a) calc(42% * var(--haze-strength, 1)), transparent),
+    transparent 58%
+  );
+}
+
+.haze--right {
+  background: linear-gradient(
+    to left,
+    color-mix(in srgb, var(--haze-a) calc(42% * var(--haze-strength, 1)), transparent),
+    transparent 58%
+  );
+}
+
+.haze--centre {
+  background: radial-gradient(
+    ellipse 70% 55% at 50% 48%,
+    color-mix(in srgb, var(--haze-b) calc(34% * var(--haze-strength, 1)), transparent),
+    transparent 72%
+  );
+}
+
+/* ---------- Petals ---------- */
+
+.petals {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  z-index: var(--z-foreground);
+}
+
+.petals__petal {
+  position: absolute;
+  top: -8%;
+  border-radius: 60% 40% 55% 45% / 70% 60% 40% 30%;
+  background: linear-gradient(
+    140deg,
+    var(--petal-a, var(--c-jasmine)),
+    var(--petal-b, var(--c-cream))
+  );
+  box-shadow: 0 1px 3px color-mix(in srgb, var(--c-navy) 18%, transparent);
+  animation: petal-fall var(--petal-duration, 22s) linear infinite;
+  animation-delay: var(--petal-delay, 0s);
+}
+
+.petals--blue .petals__petal {
+  --petal-a: var(--c-blue-mist);
+  --petal-b: var(--c-blue-powder);
+}
+
+@keyframes petal-fall {
+  from {
+    transform: translate3d(0, 0, 0) rotate(0deg);
+  }
+  to {
+    transform: translate3d(var(--petal-drift, 60px), 118vh, 0) rotate(var(--petal-spin, 360deg));
+  }
+}
+
+/* ---------- Bokeh ---------- */
+
+.bokeh {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  filter: blur(14px);
+}
+
+.bokeh__light {
+  position: absolute;
+  border-radius: 50%;
+  translate: -50% -50%;
+  animation: lamp-breathe var(--bokeh-duration, 12s) var(--e-inout) infinite alternate;
+  animation-delay: var(--bokeh-delay, 0s);
+}
+
+.bokeh__light.is-warm {
+  background: radial-gradient(circle, var(--c-flame) 0%, transparent 70%);
+}
+
+.bokeh__light.is-cool {
+  background: radial-gradient(circle, var(--c-blue-powder) 0%, transparent 70%);
+}
+
+/* ---------- Mobile: keep the venue, simplify the foreground ---------- */
+
+@media (max-width: 599px) {
+  /* Deep foreground detail becomes clutter at this width — the
+     architecture and flowers stay, the extra depth planes go. */
+  .bokeh { filter: blur(20px); opacity: 0.6; }
+  .cluster { filter: none; }
+  .pillar { filter: none; }
+}

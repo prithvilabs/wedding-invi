@@ -1,0 +1,143 @@
+/* =============================================================
+   DESIGN TOKENS — Prithvi Raj & Harshini
+   A blue-and-ivory South Indian mandapam, expressed as variables.
+   Nothing in this project should hardcode a colour, duration or
+   easing curve that belongs here.
+   ============================================================= */
+
+:root {
+  /* ---------- Palette: blue atmosphere ---------- */
+  --c-blue-mist: #e7edf4;   /* powder blue, near-white haze      */
+  --c-blue-powder: #cfdcea;  /* powder blue                       */
+  --c-blue-dusty: #a8bed4;   /* dusty blue — the signature tone   */
+  --c-blue-french: #7995b4;  /* French blue accent                */
+  --c-blue-muted: #4d6a8d;   /* muted royal blue                  */
+  --c-navy: #1d3557;         /* deep navy                         */
+  --c-navy-deep: #0e1f38;    /* deepest navy, for night scenes    */
+
+  /* ---------- Palette: warm ivory ---------- */
+  --c-ivory: #f8f4ec;
+  --c-cream: #f1e9dc;
+  --c-beige: #e3d7c5;
+  --c-sand: #cdbda6;
+
+  /* ---------- Palette: antique gold & brass ---------- */
+  --c-gold: #c9a961;
+  --c-gold-soft: #e0c68f;
+  --c-gold-deep: #a4813f;
+  --c-brass: #b08d4f;
+  --c-flame: #ffcf7a;
+  --c-flame-core: #fff3d4;
+
+  /* ---------- Palette: floral accents ---------- */
+  --c-jasmine: #fdfbf6;
+  --c-jasmine-shade: #eae3d6;
+  --c-leaf: #6f7f63;
+  --c-leaf-deep: #4d5a45;
+  --c-marigold: #e7a94b;
+  --c-kanakambaram: #e08a52;
+
+  /* ---------- Semantic surfaces ---------- */
+  --s-ink: var(--c-navy-deep);
+  --s-ink-soft: color-mix(in srgb, var(--c-navy) 72%, transparent);
+  --s-ink-faint: color-mix(in srgb, var(--c-navy) 46%, transparent);
+  --s-on-dark: var(--c-ivory);
+  --s-on-dark-soft: color-mix(in srgb, var(--c-ivory) 76%, transparent);
+  --s-on-dark-faint: color-mix(in srgb, var(--c-ivory) 52%, transparent);
+  --s-rule: color-mix(in srgb, var(--c-gold) 42%, transparent);
+  --s-rule-dark: color-mix(in srgb, var(--c-navy) 20%, transparent);
+
+  /* ---------- Typography ---------- */
+  --f-display: 'Cormorant Garamond', 'Didot', 'Georgia', 'Times New Roman', serif;
+  --f-sans: 'Jost', 'Futura', 'Avenir Next', 'Helvetica Neue', system-ui, sans-serif;
+
+  /* Fluid type scale — min at 360px, max at 1440px */
+  --t-eyebrow: clamp(0.62rem, 0.52rem + 0.42vw, 0.82rem);
+  --t-label: clamp(0.72rem, 0.65rem + 0.3vw, 0.88rem);
+  --t-body: clamp(1rem, 0.94rem + 0.3vw, 1.18rem);
+  --t-lead: clamp(1.15rem, 1rem + 0.75vw, 1.6rem);
+  --t-h3: clamp(1.5rem, 1.2rem + 1.4vw, 2.4rem);
+  --t-h2: clamp(2.1rem, 1.5rem + 2.8vw, 4rem);
+  --t-h1: clamp(3rem, 1.6rem + 6.6vw, 8.4rem);
+  --t-mono-date: clamp(0.85rem, 0.72rem + 0.6vw, 1.12rem);
+
+  --ls-eyebrow: 0.42em;
+  --ls-label: 0.26em;
+  --ls-display: 0.02em;
+  --ls-nav: 0.18em;
+
+  --lh-tight: 1.02;
+  --lh-snug: 1.25;
+  --lh-body: 1.75;
+
+  /* ---------- Spacing scale ---------- */
+  --sp-2xs: 0.25rem;
+  --sp-xs: 0.5rem;
+  --sp-sm: 0.875rem;
+  --sp-md: 1.5rem;
+  --sp-lg: 2.5rem;
+  --sp-xl: 4rem;
+  --sp-2xl: 6.5rem;
+  --sp-3xl: 10rem;
+  --sp-gutter: clamp(1.25rem, 5vw, 6rem);
+  --sp-section: clamp(5rem, 12vh, 11rem);
+  --w-measure: 34rem;
+  --w-content: 78rem;
+
+  /* ---------- Motion ---------- */
+  --d-instant: 180ms;
+  --d-quick: 420ms;
+  --d-base: 900ms;
+  --d-slow: 1500ms;
+  --d-cinematic: 2400ms;
+  --d-epic: 3600ms;
+
+  --e-out: cubic-bezier(0.22, 0.61, 0.36, 1);
+  --e-soft: cubic-bezier(0.33, 0.02, 0.16, 1);
+  --e-inout: cubic-bezier(0.65, 0, 0.35, 1);
+  --e-drift: cubic-bezier(0.45, 0, 0.25, 1);
+
+  /* ---------- Depth ---------- */
+  --sh-lift: 0 24px 60px -28px color-mix(in srgb, var(--c-navy-deep) 55%, transparent);
+  --sh-card: 0 18px 48px -24px color-mix(in srgb, var(--c-navy) 42%, transparent);
+  --sh-glow-warm: 0 0 60px 12px color-mix(in srgb, var(--c-flame) 26%, transparent);
+  --sh-glow-cool: 0 0 120px 40px color-mix(in srgb, var(--c-blue-french) 22%, transparent);
+
+  --r-none: 0;
+  --r-sm: 2px;
+  --r-pill: 999px;
+  --r-arch: 50% 50% 6px 6px / 62% 62% 6px 6px;
+
+  /* ---------- Layers ---------- */
+  --z-backdrop: 0;
+  --z-architecture: 10;
+  --z-midground: 20;
+  --z-content: 30;
+  --z-foreground: 40;
+  --z-chrome: 60;
+  --z-overlay: 80;
+
+  /* ---------- Atmosphere (animated by scroll via JS) ---------- */
+  --atm-top: var(--c-blue-powder);
+  --atm-mid: var(--c-blue-mist);
+  --atm-base: var(--c-ivory);
+  --atm-warmth: 0.35;      /* 0 = cold moonlight, 1 = warm lamplight */
+  --atm-depth: 0.25;       /* 0 = daylight,       1 = deep evening   */
+}
+
+/* Wide tracking is an editorial luxury a 390px frame cannot afford —
+   at phone widths it turns every label into three ragged lines. */
+@media (max-width: 599px) {
+  :root {
+    --ls-eyebrow: 0.26em;
+    --ls-label: 0.16em;
+    --ls-nav: 0.14em;
+  }
+}
+
+/* ---------- Breakpoints (documented; used via media queries) ----------
+   sm  ≤ 599px   phone
+   md  600–899px tablet portrait
+   lg  900–1279px tablet landscape / laptop
+   xl  ≥ 1280px  desktop
+   --------------------------------------------------------------------- */

@@ -1,0 +1,1246 @@
+/* =============================================================
+   SCENES
+   The rooms of the venue, the passages between them, and the way
+   things arrive when the camera reaches them.
+   ============================================================= */
+
+/* ---------- Named lighting states ----------
+   Each scene declares its own ground colour here, and the bridges
+   above and below it interpolate between the two. A scene's colour
+   is named once; nothing else may restate it. */
+:root {
+  --scene-entrance: #93aecb;
+  --scene-ivory: #f8f4ec;
+  --scene-daylight: #f3ece0;
+  --scene-ceremony: #e9eff6;
+  --scene-evening: #172c4c;
+  --scene-night: #0e1f38;
+  --scene-finale: #f6f0e6;
+}
+
+/* ---------- The colour grade ----------
+   One fixed layer over the whole film. It does not paint the site
+   blue — it grades what is already there, the way a lighting board
+   changes a room without repainting it. */
+.atmosphere {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  pointer-events: none;
+  mix-blend-mode: soft-light;
+  opacity: 0.4;
+  background:
+    radial-gradient(
+      ellipse 80% 50% at 50% 92%,
+      color-mix(in srgb, var(--c-flame) calc(var(--atm-warmth, 0.3) * 42%), transparent),
+      transparent 70%
+    ),
+    linear-gradient(to bottom, var(--atm-top), var(--atm-mid) 52%, var(--atm-base));
+  transition: opacity var(--d-slow) var(--e-soft);
+}
+
+/* ---------- Scene shell ---------- */
+
+.scene {
+  position: relative;
+  isolation: isolate;
+  overflow: clip;
+  padding-block: var(--sp-section);
+  padding-inline: var(--sp-gutter);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.scene--full {
+  min-height: 100svh;
+  padding-block: 0;
+}
+
+.scene__content {
+  position: relative;
+  z-index: var(--z-content);
+  width: 100%;
+  max-width: var(--w-content);
+  margin-inline: auto;
+}
+
+.scene__layer {
+  position: absolute;
+  inset: 0;
+  overflow: clip;
+}
+
+.scene__layer--back { z-index: var(--z-backdrop); }
+.scene__layer--architecture { z-index: var(--z-architecture); }
+
+/* A scene taller than the screen would otherwise hang its ceiling
+   far above the visitor and stand its lamps far below them. A stage
+   pins one viewport-high frame of the venue in place while the
+   camera moves through the scene, so the room is always around the
+   type rather than somewhere off-screen. */
+.scene__stage {
+  position: sticky;
+  top: 0;
+  height: 100svh;
+  width: 100%;
+}
+
+/* Anything hung from the ceiling clears the navigation band. */
+.scene .thoranam { top: clamp(4rem, 8vh, 6rem); }
+.scene__layer--mid { z-index: var(--z-midground); }
+/* The foreground plane sits above the readable content only where a
+   section explicitly opts in; by default type stays on top. */
+.scene__layer--front { z-index: var(--z-midground); }
+
+/* ---------- Scene grounds ---------- */
+
+/* The entrance at dusk. Navy is a narrow band at the very top — the
+   body of the scene is dusty and powder blue settling into ivory, so
+   the room reads as lit rather than painted. */
+.scene--entrance {
+  background:
+    radial-gradient(ellipse 66% 46% at 50% 46%, color-mix(in srgb, var(--c-ivory) 52%, transparent), transparent 72%),
+    radial-gradient(ellipse 92% 56% at 50% 102%, color-mix(in srgb, var(--c-cream) 88%, transparent), transparent 64%),
+    linear-gradient(
+      to bottom,
+      #2c4a75 0%,
+      #57789f 7%,
+      var(--scene-entrance) 22%,
+      var(--c-blue-dusty) 44%,
+      var(--c-blue-powder) 64%,
+      var(--c-blue-mist) 76%,
+      var(--c-cream) 90%,
+      var(--c-beige) 100%
+    );
+  color: var(--s-on-dark);
+}
+
+/* Ivory rooms still hold the blue of the venue — in the air at the
+   edges of the frame, not across the walls. */
+.scene--ivory {
+  background:
+    radial-gradient(ellipse 48% 60% at 4% 30%, color-mix(in srgb, var(--c-blue-powder) 52%, transparent), transparent 70%),
+    radial-gradient(ellipse 44% 52% at 98% 72%, color-mix(in srgb, var(--c-blue-mist) 62%, transparent), transparent 70%),
+    linear-gradient(to bottom, var(--c-blue-mist), var(--scene-ivory) 30%, var(--c-ivory) 72%, var(--c-blue-mist));
+  color: var(--s-ink);
+}
+
+.scene--daylight {
+  background: linear-gradient(to bottom, var(--c-ivory), var(--scene-daylight) 60%, var(--c-blue-mist));
+  color: var(--s-ink);
+}
+
+.scene--ceremony {
+  background:
+    radial-gradient(ellipse 70% 50% at 50% 68%, color-mix(in srgb, var(--c-flame) 20%, transparent), transparent 66%),
+    linear-gradient(to bottom, var(--c-blue-dusty), var(--scene-ceremony) 44%, var(--c-cream));
+  color: var(--s-ink);
+}
+
+.scene--evening {
+  background:
+    radial-gradient(ellipse 60% 44% at 50% 74%, color-mix(in srgb, var(--c-flame) 22%, transparent), transparent 62%),
+    linear-gradient(to bottom, var(--c-navy-deep), var(--scene-evening) 50%, var(--c-blue-muted));
+  color: var(--s-on-dark);
+}
+
+.scene--night {
+  background: linear-gradient(to bottom, var(--c-navy-deep), var(--scene-night) 46%, #24406a);
+  color: var(--s-on-dark);
+}
+
+.scene--finale {
+  background:
+    radial-gradient(ellipse 76% 56% at 50% 80%, color-mix(in srgb, var(--c-flame) 26%, transparent), transparent 68%),
+    linear-gradient(to bottom, var(--c-blue-dusty), var(--scene-finale) 46%, var(--c-ivory));
+  color: var(--s-ink);
+}
+
+/* Dark scenes need their rules and quiet text re-toned. */
+.scene--entrance .u-eyebrow,
+.scene--evening .u-eyebrow,
+.scene--night .u-eyebrow {
+  color: var(--s-on-dark-soft);
+}
+
+/* ---------- Bridges: the passages ---------- */
+
+.bridge {
+  position: relative;
+  overflow: clip;
+  isolation: isolate;
+}
+
+.bridge__wash {
+  position: absolute;
+  inset: -1px 0;
+  background: linear-gradient(to bottom, var(--bridge-from), var(--bridge-to));
+}
+
+.bridge__skyline,
+.bridge__curtain,
+.bridge__doorway,
+.bridge__lamps,
+.bridge__threshold {
+  position: absolute;
+  inset: 0;
+}
+
+.bridge__skyline { z-index: 2; }
+
+.bridge__tower {
+  position: absolute;
+  bottom: -6%;
+  opacity: 0;
+  translate: 0 24px;
+  transition:
+    opacity var(--d-cinematic) var(--e-soft),
+    translate var(--d-cinematic) var(--e-soft);
+}
+
+.bridge.is-active .bridge__tower { opacity: 1; translate: 0 0; }
+.bridge__tower--far { left: 4%; width: clamp(180px, 26vw, 420px); transition-delay: 0ms; }
+.bridge__tower--mid { right: 6%; width: clamp(150px, 22vw, 360px); transition-delay: 220ms; }
+.bridge__tower--near { left: 38%; width: clamp(210px, 30vw, 500px); transition-delay: 440ms; }
+
+.bridge__doorway { z-index: 3; }
+
+.bridge__doorway svg {
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  transition: opacity var(--d-slow) var(--e-soft);
+}
+
+.bridge.is-active .bridge__doorway svg { opacity: 1; }
+
+.bridge__curtain { z-index: 4; }
+
+.bridge__curtain .garland {
+  opacity: 0;
+  translate: 0 -40px;
+  transition:
+    opacity var(--d-slow) var(--e-out),
+    translate var(--d-slow) var(--e-out);
+}
+
+.bridge.is-active .bridge__curtain .garland { opacity: 1; translate: 0 0; }
+.bridge__curtain .garland:nth-child(2n) { transition-delay: 160ms; }
+.bridge__curtain .garland:nth-child(3n) { transition-delay: 300ms; }
+
+.bridge__lamps {
+  z-index: 4;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: clamp(1.5rem, 8vw, 7rem);
+  padding-bottom: 4%;
+}
+
+.bridge__lamps .kolam { position: relative; opacity: 0.42; }
+
+.bridge__threshold {
+  z-index: 4;
+  display: grid;
+  place-items: center;
+  color: var(--c-gold);
+}
+
+.bridge__threshold .kolam { position: relative; }
+
+/* ---------- Reveals ---------- */
+
+.reveal {
+  transition:
+    opacity var(--d-slow) var(--e-out),
+    transform var(--d-slow) var(--e-out),
+    filter var(--d-slow) var(--e-out);
+  transition-delay: var(--reveal-delay, 0ms);
+}
+
+.reveal--rise { opacity: 0; transform: translate3d(0, 28px, 0); }
+.reveal--fade { opacity: 0; }
+.reveal--settle { opacity: 0; transform: translate3d(0, 14px, 0) scale(0.986); }
+.reveal--focus { opacity: 0; filter: blur(9px); transform: translate3d(0, 16px, 0); }
+.reveal--draw { opacity: 0; transform: scaleX(0); transform-origin: left; }
+
+.reveal.is-revealed {
+  opacity: 1;
+  filter: blur(0);
+  transform: none;
+}
+
+/* =============================================================
+   HERO
+   ============================================================= */
+
+.hero__skyline,
+.hero__hall,
+.hero__foliage,
+.hero__near {
+  position: absolute;
+  inset: 0;
+}
+
+.hero__gopuram {
+  position: absolute;
+  bottom: 18%;
+  opacity: 0;
+  transition: opacity var(--d-cinematic) var(--e-soft);
+}
+
+/* The towers stay out of the middle third: nothing may stand behind
+   the names. */
+.hero__gopuram--left { left: -5%; width: clamp(200px, 28vw, 440px); bottom: 20%; }
+.hero__gopuram--right { right: -7%; width: clamp(180px, 25vw, 390px); bottom: 22%; }
+.hero__gopuram--centre { display: none; }
+
+.hero__pillar {
+  opacity: 0;
+  translate: 0 40px;
+  transition:
+    opacity var(--d-cinematic) var(--e-soft),
+    translate var(--d-cinematic) var(--e-soft);
+}
+
+/* The arch is hung above the type, not around it. */
+.hero__arch {
+  opacity: 0;
+  transition: opacity var(--d-cinematic) var(--e-soft);
+  inset: clamp(2.5rem, 6vh, 4.5rem) 0 auto;
+  height: 62%;
+}
+
+.hero__lamps {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  padding: 0 clamp(0.5rem, 7vw, 8rem) clamp(1rem, 5vh, 4rem);
+}
+
+.hero__lamp {
+  opacity: 0;
+  translate: 0 30px;
+  transition:
+    opacity var(--d-cinematic) var(--e-soft),
+    translate var(--d-cinematic) var(--e-soft);
+}
+
+.hero__garland {
+  opacity: 0;
+  translate: 0 -60px;
+  transition:
+    opacity var(--d-cinematic) var(--e-soft),
+    translate var(--d-cinematic) var(--e-soft);
+}
+
+/* Hung from below the navigation band so the monogram and links are
+   never read against flowers. */
+.hero__garland { top: clamp(4.5rem, 9vh, 7rem); }
+.hero__garland--left { left: clamp(-1rem, 3vw, 5rem); }
+.hero__garland--right { right: clamp(-1rem, 3vw, 5rem); left: auto; }
+
+.hero__cluster {
+  opacity: 0;
+  transition: opacity var(--d-cinematic) var(--e-soft);
+}
+
+.hero__cluster--left { bottom: -6%; left: -5%; }
+.hero__cluster--right { bottom: -4%; right: -5%; }
+.hero__cluster--near { bottom: -18%; left: 8%; filter: blur(6px); opacity: 0; }
+
+/* The load, beat by beat. Each stage unlocks one tier of the scene;
+   the durations above keep every arrival slow. */
+.hero.stage-2 .hero__gopuram,
+.hero.stage-3 .hero__gopuram,
+.hero.stage-4 .hero__gopuram { opacity: 1; }
+.hero.stage-5 .hero__gopuram,
+.hero.stage-6 .hero__gopuram,
+.hero.stage-7 .hero__gopuram,
+.hero.stage-8 .hero__gopuram,
+.hero.stage-9 .hero__gopuram,
+.hero.stage-10 .hero__gopuram { opacity: 1; }
+
+.hero.stage-3 .hero__pillar,
+.hero.stage-4 .hero__pillar,
+.hero.stage-5 .hero__pillar,
+.hero.stage-6 .hero__pillar,
+.hero.stage-7 .hero__pillar,
+.hero.stage-8 .hero__pillar,
+.hero.stage-9 .hero__pillar,
+.hero.stage-10 .hero__pillar { opacity: 1; translate: 0 0; }
+
+.hero.stage-4 .hero__arch, .hero.stage-5 .hero__arch, .hero.stage-6 .hero__arch,
+.hero.stage-7 .hero__arch, .hero.stage-8 .hero__arch, .hero.stage-9 .hero__arch,
+.hero.stage-10 .hero__arch,
+.hero.stage-4 .hero__garland, .hero.stage-5 .hero__garland, .hero.stage-6 .hero__garland,
+.hero.stage-7 .hero__garland, .hero.stage-8 .hero__garland, .hero.stage-9 .hero__garland,
+.hero.stage-10 .hero__garland { opacity: 1; translate: 0 0; }
+
+.hero.stage-4 .hero__cluster, .hero.stage-5 .hero__cluster, .hero.stage-6 .hero__cluster,
+.hero.stage-7 .hero__cluster, .hero.stage-8 .hero__cluster, .hero.stage-9 .hero__cluster,
+.hero.stage-10 .hero__cluster { opacity: 1; }
+.hero .hero__cluster--near { opacity: 0; }
+.hero.stage-5 .hero__cluster--near, .hero.stage-6 .hero__cluster--near,
+.hero.stage-7 .hero__cluster--near, .hero.stage-8 .hero__cluster--near,
+.hero.stage-9 .hero__cluster--near, .hero.stage-10 .hero__cluster--near { opacity: 0.32; }
+
+.hero.stage-5 .hero__lamp, .hero.stage-6 .hero__lamp, .hero.stage-7 .hero__lamp,
+.hero.stage-8 .hero__lamp, .hero.stage-9 .hero__lamp, .hero.stage-10 .hero__lamp {
+  opacity: 1;
+  translate: 0 0;
+}
+
+.hero__content {
+  text-align: center;
+  position: relative;
+  /* Clears the crown of the arch overhead. */
+  padding-top: clamp(3.5rem, 11vh, 9rem);
+  display: grid;
+  justify-items: center;
+  gap: clamp(1rem, 2.4vh, 2.2rem);
+}
+
+.hero__eyebrow,
+.hero__names > *,
+.hero__date,
+.hero .scroll-cue {
+  opacity: 0;
+  translate: 0 22px;
+  transition:
+    opacity var(--d-slow) var(--e-out),
+    translate var(--d-slow) var(--e-out);
+}
+
+.hero.stage-6 .hero__eyebrow, .hero.stage-7 .hero__eyebrow, .hero.stage-8 .hero__eyebrow,
+.hero.stage-9 .hero__eyebrow, .hero.stage-10 .hero__eyebrow { opacity: 1; translate: 0 0; }
+
+.hero.stage-7 .hero__name:first-of-type, .hero.stage-8 .hero__name:first-of-type,
+.hero.stage-9 .hero__name:first-of-type, .hero.stage-10 .hero__name:first-of-type { opacity: 1; translate: 0 0; }
+
+.hero.stage-8 .hero__amp, .hero.stage-9 .hero__amp, .hero.stage-10 .hero__amp { opacity: 1; translate: 0 0; }
+
+.hero.stage-9 .hero__names .hero__name:last-of-type,
+.hero.stage-10 .hero__names .hero__name:last-of-type { opacity: 1; translate: 0 0; }
+
+.hero.stage-10 .hero__date { opacity: 1; translate: 0 0; }
+.hero.stage-10 .scroll-cue { opacity: 1; translate: 0 0; }
+
+.hero__content::before {
+  /* The clearing the names stand in. Not a panel — an opening in the
+     haze, so the architecture behind stays visible but loses contrast. */
+  content: '';
+  position: absolute;
+  inset: -18% -12%;
+  z-index: -1;
+  background: radial-gradient(
+    ellipse 44% 40% at 50% 44%,
+    color-mix(in srgb, var(--c-navy) 22%, transparent),
+    transparent 74%
+  );
+  filter: blur(30px);
+  pointer-events: none;
+}
+
+.hero__eyebrow {
+  color: var(--c-cream);
+}
+
+.hero__names {
+  display: grid;
+  justify-items: center;
+  gap: clamp(0.1rem, 0.6vh, 0.6rem);
+  margin: 0;
+  font-weight: 300;
+}
+
+.hero__name {
+  display: block;
+  font-size: var(--t-h1);
+  color: var(--c-ivory);
+  text-shadow:
+    0 1px 2px color-mix(in srgb, var(--c-navy-deep) 42%, transparent),
+    0 2px 36px color-mix(in srgb, var(--c-navy-deep) 62%, transparent),
+    0 0 110px color-mix(in srgb, var(--c-navy-deep) 48%, transparent);
+}
+
+.hero__amp {
+  display: block;
+  font-size: clamp(1.5rem, 0.9rem + 2.2vw, 3rem);
+  font-style: italic;
+  color: var(--c-gold-soft);
+  line-height: 1;
+}
+
+.hero__date {
+  color: var(--c-gold-deep);
+  margin-top: clamp(0.5rem, 1.5vh, 1.4rem);
+}
+
+/* =============================================================
+   STORY
+   ============================================================= */
+
+.story { padding-block: calc(var(--sp-section) * 1.3); }
+
+.story__drape, .story__corner { position: absolute; inset: 0; }
+
+.story__garland { opacity: 0.75; }
+.story__garland--left { left: 3%; }
+.story__garland--right { right: 5%; left: auto; top: 12%; }
+
+.story__lamp {
+  position: absolute;
+  bottom: 6%;
+  left: 6%;
+  opacity: 0.85;
+}
+
+.story__cluster { bottom: 4%; right: 2%; opacity: 0.8; }
+
+.story__content {
+  max-width: 62rem;
+  display: grid;
+  justify-items: center;
+  gap: var(--sp-xl);
+  text-align: center;
+}
+
+.story__eyebrow { color: var(--s-ink-faint); }
+
+.story__beats {
+  display: grid;
+  gap: var(--sp-2xl);
+  width: 100%;
+}
+
+.story__beat {
+  display: grid;
+  justify-items: center;
+  gap: var(--sp-md);
+  position: relative;
+}
+
+.story__beat-eyebrow { color: var(--c-gold-deep); }
+
+.story__line {
+  max-width: 30ch;
+  font-size: var(--t-h3);
+  line-height: 1.45;
+  color: var(--c-navy);
+  font-weight: 300;
+}
+
+.story__rule {
+  display: block;
+  width: 1px;
+  height: var(--sp-lg);
+  margin-top: var(--sp-lg);
+  background: linear-gradient(to bottom, var(--s-rule), transparent);
+}
+
+.story__threshold { color: var(--c-gold); }
+.story__threshold .kolam { position: relative; }
+
+/* =============================================================
+   FAMILIES
+   ============================================================= */
+
+.families__hall { position: absolute; inset: 0; }
+.families__pillar { opacity: 0.55; }
+.families__cluster { bottom: 3%; opacity: 0.7; }
+.families__cluster--left { left: 1%; }
+.families__cluster--right { right: 1%; }
+
+.families__content {
+  display: grid;
+  justify-items: center;
+  gap: var(--sp-xl);
+  text-align: center;
+  max-width: 64rem;
+}
+
+.families__intro {
+  max-width: 34ch;
+  font-size: var(--t-h3);
+  line-height: 1.5;
+  color: var(--c-navy);
+}
+
+.families__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 17rem), 1fr));
+  gap: var(--sp-xl);
+  width: 100%;
+  /* Symmetry is the point of this section — the divider is centred
+     between the two sides, never under one of them. */
+  position: relative;
+}
+
+.families__side {
+  display: grid;
+  justify-items: center;
+  gap: var(--sp-sm);
+  padding-inline: var(--sp-md);
+}
+
+.families__ornament { opacity: 0.8; }
+
+.families__label { color: var(--s-ink-faint); }
+
+.families__for {
+  font-size: var(--t-h3);
+  color: var(--c-navy);
+}
+
+.families__names {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--sp-2xs);
+}
+
+.families__name {
+  font-size: var(--t-lead);
+  color: var(--c-navy);
+}
+
+.families__pending {
+  color: var(--s-ink-faint);
+  font-style: normal;
+}
+
+/* =============================================================
+   JOURNEY
+   ============================================================= */
+
+.journey {
+  min-height: 190vh;
+  align-items: flex-start;
+}
+
+.journey__wire { z-index: var(--z-midground); }
+
+.journey__wire svg { width: 100%; height: 100%; }
+
+.journey__wire-live {
+  stroke-dasharray: 2400;
+  /* Drawn by the visitor's own progress through the scene — the
+     journey only advances as far as they have come. */
+  stroke-dashoffset: calc(2400 * (1 - var(--scene-progress, 0)));
+  filter: drop-shadow(0 0 10px color-mix(in srgb, var(--c-gold-soft) 60%, transparent));
+}
+
+.journey__end { display: block; }
+
+.journey__skyline, .journey__city, .journey__foreground {
+  position: absolute;
+  inset: 0;
+}
+
+.journey__end--india { inset: 0 0 auto; height: 60%; }
+.journey__end--usa { inset: auto 0 0; height: 46%; }
+
+.journey__tower {
+  position: absolute;
+  bottom: 30%;
+}
+
+.journey__tower--a { left: 2%; width: clamp(150px, 20vw, 320px); }
+.journey__tower--b { left: 26%; width: clamp(120px, 16vw, 260px); bottom: 26%; }
+.journey__tower--c { right: 6%; width: clamp(130px, 18vw, 290px); bottom: 32%; }
+
+.journey__lamp {
+  position: absolute;
+  bottom: 24%;
+  left: 12%;
+}
+
+.journey__city {
+  color: color-mix(in srgb, var(--c-navy-deep) 88%, transparent);
+  display: flex;
+  align-items: flex-end;
+}
+
+.journey__city svg { width: 100%; height: auto; opacity: 0.95; }
+
+.journey__garland { right: 8%; top: 30%; opacity: 0.7; }
+
+.journey__content {
+  display: grid;
+  justify-items: center;
+  gap: var(--sp-lg);
+  text-align: center;
+  padding-block: clamp(7rem, 18vh, 14rem) 14vh;
+  color: var(--s-on-dark);
+}
+
+.journey__eyebrow { color: var(--c-gold-soft); }
+
+.journey__title {
+  font-size: var(--t-h2);
+  max-width: 18ch;
+  color: var(--c-ivory);
+}
+
+.journey__place { display: grid; justify-items: center; gap: var(--sp-xs); }
+
+.journey__place--origin { margin-top: var(--sp-2xl); }
+.journey__place--destination { margin-top: 18vh; }
+
+.journey__place-name {
+  font-size: var(--t-h3);
+  letter-spacing: 0.12em;
+  color: var(--c-ivory);
+}
+
+.journey__place-caption { color: var(--s-on-dark-faint); }
+
+.journey__beats {
+  list-style: none;
+  margin: 18vh 0 0;
+  padding: 0;
+  display: grid;
+  gap: clamp(6rem, 14vh, 12rem);
+  max-width: 34rem;
+}
+
+.journey__beat { display: grid; gap: var(--sp-xs); justify-items: center; }
+.journey__beat-label { color: var(--c-gold-soft); }
+.journey__beat-line { color: var(--s-on-dark-soft); }
+
+/* =============================================================
+   WEDDING
+   ============================================================= */
+
+.wedding { min-height: 100svh; }
+
+.wedding__hall, .wedding__drape { position: absolute; inset: 0; }
+
+.wedding__arch-holder { position: absolute; inset: clamp(3rem, 7vh, 5rem) 0 auto; height: 64%; }
+
+.wedding__lamps > .scene__stage {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  padding: 0 clamp(0.5rem, 4vw, 5rem) clamp(1rem, 4vh, 3rem);
+}
+
+.wedding__lamp--left, .wedding__lamp--right { margin-bottom: 2%; }
+
+/* The hanging garlands frame the date; they never fall across it. */
+.wedding__drape .garland { top: clamp(3.5rem, 8vh, 6rem); }
+
+.wedding__cluster { bottom: -3%; }
+.wedding__cluster--left { left: -3%; }
+.wedding__cluster--right { right: -3%; }
+
+.wedding__content {
+  display: grid;
+  justify-items: center;
+  gap: var(--sp-md);
+  text-align: center;
+}
+
+.wedding__date {
+  font-size: var(--t-h1);
+  color: var(--c-navy);
+  text-shadow: 0 2px 40px color-mix(in srgb, var(--c-ivory) 70%, transparent);
+}
+
+.wedding__long { color: var(--s-ink-faint); max-width: 30ch; }
+
+.wedding__pending {
+  display: grid;
+  justify-items: center;
+  gap: var(--sp-md);
+  margin-top: var(--sp-lg);
+}
+
+.wedding__rule {
+  width: clamp(60px, 14vw, 140px);
+  height: 1px;
+  background: linear-gradient(to right, transparent, var(--c-gold), transparent);
+}
+
+.wedding__pending-text {
+  font-size: var(--t-h3);
+  font-style: italic;
+  color: var(--c-blue-muted);
+}
+
+.wedding__threshold { margin-top: var(--sp-lg); color: var(--c-gold); }
+.wedding__threshold .kolam { position: relative; }
+
+/* =============================================================
+   RECEPTION
+   ============================================================= */
+
+.reception { min-height: 100svh; }
+
+.reception__drapery, .reception__foreground { position: absolute; inset: 0; }
+.reception__drapery svg { width: 100%; height: 100%; filter: blur(6px); opacity: 0.85; }
+
+.reception__arch-holder { position: absolute; inset: clamp(3rem, 7vh, 5rem) 0 auto; height: 70%; }
+
+.reception__lamps > .scene__stage {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  padding: 0 clamp(1rem, 8vw, 9rem) clamp(1rem, 4vh, 3rem);
+}
+
+.reception__garland { opacity: 0.8; }
+.reception__garland--left { left: 4%; }
+.reception__garland--right { right: 4%; left: auto; }
+
+.reception__cluster { bottom: -2%; }
+.reception__cluster--left { left: -2%; }
+.reception__cluster--right { right: -2%; }
+
+.reception__content {
+  display: grid;
+  justify-items: center;
+  gap: var(--sp-md);
+  text-align: center;
+  color: var(--s-on-dark);
+}
+
+.reception__date {
+  font-size: var(--t-h2);
+  color: var(--c-ivory);
+}
+
+.reception__venue {
+  display: grid;
+  justify-items: center;
+  gap: var(--sp-xs);
+  margin-top: var(--sp-md);
+  padding: var(--sp-lg) var(--sp-xl);
+  border-top: 1px solid var(--s-rule);
+  border-bottom: 1px solid var(--s-rule);
+}
+
+.reception__venue-name {
+  font-size: var(--t-h2);
+  color: var(--c-gold-soft);
+  line-height: 1.1;
+}
+
+.reception__venue-city {
+  color: var(--s-on-dark-soft);
+  letter-spacing: 0.34em;
+}
+
+.reception__pending { color: var(--s-on-dark-faint); margin-top: var(--sp-md); }
+
+/* =============================================================
+   TRAVEL
+   ============================================================= */
+
+.travel__skyline { position: absolute; inset: 0; }
+
+.travel__tower { position: absolute; bottom: 0; opacity: 0.75; }
+.travel__tower--a { left: -2%; width: clamp(140px, 20vw, 320px); }
+.travel__tower--b { left: 34%; width: clamp(170px, 24vw, 380px); }
+.travel__tower--c { right: 0%; width: clamp(130px, 18vw, 280px); }
+
+.travel__cluster { bottom: 2%; opacity: 0.55; }
+.travel__cluster--left { left: 0; }
+.travel__cluster--right { right: 0; }
+
+.travel__content {
+  display: grid;
+  justify-items: center;
+  gap: var(--sp-xl);
+  text-align: center;
+  color: var(--s-on-dark);
+  max-width: 54rem;
+}
+
+.travel__note {
+  font-size: var(--t-h3);
+  max-width: 26ch;
+  color: var(--c-ivory);
+  line-height: 1.45;
+}
+
+.travel__road {
+  position: relative;
+  width: 100%;
+  color: var(--c-gold);
+  padding-left: clamp(1.5rem, 5vw, 3rem);
+  text-align: left;
+}
+
+.travel__road > svg {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 4px;
+  height: 100%;
+}
+
+.travel__road-line {
+  stroke-dasharray: 400;
+  stroke-dashoffset: 400;
+  transition: stroke-dashoffset var(--d-epic) var(--e-soft);
+  opacity: 0.6;
+}
+
+.travel__road.is-drawn .travel__road-line { stroke-dashoffset: 0; }
+
+.travel__list { margin: 0; display: grid; gap: var(--sp-xl); }
+
+.travel__item { position: relative; display: grid; gap: var(--sp-2xs); }
+
+.travel__marker {
+  position: absolute;
+  left: calc(clamp(1.5rem, 5vw, 3rem) * -1 - 2px);
+  top: 0.7em;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--c-gold);
+  box-shadow: 0 0 14px var(--c-gold);
+}
+
+.travel__label { color: var(--c-gold-soft); }
+
+.travel__value {
+  font-size: var(--t-lead);
+  color: var(--s-on-dark-soft);
+  font-style: italic;
+}
+
+/* =============================================================
+   GALLERY
+   ============================================================= */
+
+.gallery { padding-block: calc(var(--sp-section) * 1.1); }
+
+.gallery__drape { position: absolute; inset: 0; }
+.gallery__garland { opacity: 0.6; }
+.gallery__garland--left { left: 0; }
+.gallery__garland--right { right: 0; left: auto; }
+
+.gallery__cluster { opacity: 0.6; }
+.gallery__cluster--a { bottom: 2%; left: -2%; }
+.gallery__cluster--b { top: 6%; right: -1%; }
+
+.gallery__content { display: grid; gap: var(--sp-xl); justify-items: center; }
+
+/* Hand-laid, not gridded: plates overlap and step out of line. */
+.gallery__album {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: clamp(0.75rem, 2vw, 2rem) clamp(0.5rem, 1.5vw, 1.5rem);
+  width: 100%;
+  align-items: start;
+}
+
+/* Three spreads of two plates each. Within a spread the plates
+   overlap and sit at different heights; between spreads the album
+   keeps its rhythm. Placement is explicit so the layout is composed,
+   not whatever the auto-placer happened to do. */
+.gallery__plate:nth-child(1) { grid-area: 1 / 2 / 2 / 7;  justify-self: end; }
+.gallery__plate:nth-child(2) { grid-area: 1 / 7 / 2 / 12; justify-self: start; margin-top: clamp(3rem, 7vw, 7rem); }
+.gallery__plate:nth-child(3) { grid-area: 2 / 3 / 3 / 8;  justify-self: end;   margin-top: clamp(-5rem, -6vw, -1.5rem); z-index: 2; }
+.gallery__plate:nth-child(4) { grid-area: 2 / 8 / 3 / 12; justify-self: start; margin-top: clamp(0rem, 2vw, 2rem); }
+.gallery__plate:nth-child(5) { grid-area: 3 / 2 / 4 / 7;  justify-self: end;   margin-top: clamp(-4rem, -5vw, -1rem); }
+.gallery__plate:nth-child(6) { grid-area: 3 / 7 / 4 / 12; justify-self: start; margin-top: clamp(-6rem, -7vw, -2rem); }
+
+.gallery__frame {
+  margin: 0;
+  /* An album is read as a spread, not one photograph per screen.
+     The width is explicit: the plates are staggered with justify-self,
+     which shrink-wraps the grid item, and an aspect-ratio box has no
+     intrinsic width to shrink-wrap to. */
+  width: clamp(9rem, 21vw, 17.5rem);
+  max-width: 100%;
+  rotate: var(--plate-tilt, 0deg);
+  background: var(--c-ivory);
+  padding: clamp(0.5rem, 1.2vw, 1rem);
+  box-shadow: var(--sh-card);
+  transition: rotate var(--d-base) var(--e-out), box-shadow var(--d-base) var(--e-out);
+}
+
+.gallery__frame:hover { rotate: 0deg; box-shadow: var(--sh-lift); }
+
+.gallery__image,
+.gallery__empty {
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  object-fit: cover;
+  display: block;
+}
+
+.gallery__plate--wide .gallery__image,
+.gallery__plate--wide .gallery__empty { aspect-ratio: 3 / 2; }
+
+.gallery__plate--small .gallery__image,
+.gallery__plate--small .gallery__empty { aspect-ratio: 1 / 1; }
+
+.gallery__empty {
+  display: grid;
+  place-items: center;
+  background:
+    radial-gradient(circle at 50% 40%, color-mix(in srgb, var(--c-blue-mist) 70%, transparent), transparent 70%),
+    linear-gradient(140deg, var(--c-cream), var(--c-beige));
+  border: 1px solid color-mix(in srgb, var(--c-sand) 60%, transparent);
+}
+
+.gallery__empty-mark {
+  width: clamp(28px, 4vw, 46px);
+  aspect-ratio: 1;
+  border: 1px solid var(--c-gold);
+  rotate: 45deg;
+  opacity: 0.5;
+}
+
+.gallery__caption {
+  margin-top: var(--sp-xs);
+  color: var(--s-ink-faint);
+  font-size: var(--t-eyebrow);
+}
+
+.gallery__note {
+  color: var(--s-ink-faint);
+  text-align: center;
+}
+
+/* =============================================================
+   FINALE
+   ============================================================= */
+
+.finale { min-height: 100svh; padding-block: calc(var(--sp-section) * 1.1); }
+
+.finale__hall, .finale__foreground { position: absolute; inset: 0; }
+
+.finale__tower { position: absolute; bottom: 0; opacity: 0.6; }
+.finale__tower--left { left: -6%; width: clamp(160px, 24vw, 380px); }
+.finale__tower--right { right: -6%; width: clamp(150px, 22vw, 340px); }
+
+.finale__arch-holder { position: absolute; inset: clamp(3rem, 7vh, 5rem) 0 auto; height: 66%; }
+
+.finale__lamps > .scene__stage {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  padding: 0 clamp(0.5rem, 6vw, 7rem) clamp(1rem, 4vh, 3rem);
+}
+
+.finale__garland { opacity: 0.85; }
+.finale__garland--left { left: 2%; }
+.finale__garland--right { right: 2%; left: auto; }
+
+.finale__cluster { bottom: -4%; }
+.finale__cluster--left { left: -4%; }
+.finale__cluster--right { right: -4%; }
+
+.finale__content {
+  display: grid;
+  justify-items: center;
+  padding-top: clamp(2rem, 8vh, 6rem);
+  gap: var(--sp-md);
+  text-align: center;
+}
+
+.finale__eyebrow { color: var(--c-gold-deep); }
+
+.finale__names {
+  display: grid;
+  justify-items: center;
+  gap: clamp(0.2rem, 1vh, 0.8rem);
+  margin: var(--sp-md) 0;
+  font-weight: 300;
+}
+
+.finale__name {
+  display: block;
+  font-size: var(--t-h1);
+  color: var(--c-navy);
+  line-height: var(--lh-tight);
+}
+
+.finale__amp {
+  display: block;
+  font-size: clamp(1.4rem, 0.9rem + 2vw, 2.8rem);
+  font-style: italic;
+  color: var(--c-gold-deep);
+}
+
+.finale__date {
+  display: grid;
+  grid-auto-flow: column;
+  align-items: center;
+  gap: var(--sp-md);
+  color: var(--c-navy);
+}
+
+.finale__rule {
+  width: clamp(28px, 7vw, 80px);
+  height: 1px;
+  background: var(--s-rule);
+}
+
+.finale__closing {
+  max-width: 26ch;
+  color: var(--s-ink-soft);
+  margin-top: var(--sp-md);
+}
+
+.finale__rsvp {
+  display: grid;
+  justify-items: center;
+  gap: var(--sp-sm);
+  margin-top: var(--sp-2xl);
+  padding: var(--sp-xl) clamp(1.5rem, 6vw, 4rem);
+  max-width: 34rem;
+  border: 1px solid var(--s-rule);
+  background: color-mix(in srgb, var(--c-ivory) 55%, transparent);
+  backdrop-filter: blur(6px);
+}
+
+.finale__rsvp-eyebrow { color: var(--c-gold-deep); }
+.finale__rsvp-title { font-size: var(--t-h3); color: var(--c-navy); }
+.finale__rsvp-body { color: var(--s-ink-soft); max-width: 30ch; font-size: var(--t-body); }
+
+.finale__rsvp-status {
+  margin-top: var(--sp-xs);
+  padding: var(--sp-xs) var(--sp-md);
+  border: 1px solid var(--s-rule);
+  border-radius: var(--r-pill);
+  color: var(--c-gold-deep);
+}
+
+.finale__threshold { margin-top: var(--sp-xl); color: var(--c-gold); }
+.finale__threshold .kolam { position: relative; }
+
+/* =============================================================
+   RESPONSIVE
+   The camera stays; the depth planes thin out.
+   ============================================================= */
+
+@media (max-width: 899px) {
+  .journey { min-height: 170vh; }
+
+  .gallery__plate:nth-child(odd) { grid-area: auto / 1 / auto / 7; margin: 0; justify-self: stretch; }
+  .gallery__plate:nth-child(even) { grid-area: auto / 7 / auto / 13; margin: 0; justify-self: stretch; }
+}
+
+@media (max-width: 599px) {
+  .scene { padding-inline: var(--sp-gutter); }
+
+  /* A phone is not a small desktop. The venue is rebuilt for a
+     narrow, tall frame: the architecture retreats to the very edges,
+     one garland hangs instead of two, and the middle of the screen is
+     given entirely to the names. */
+
+  /* Architecture: narrower, pushed off the edges, further back. */
+  .pillar {
+    width: clamp(46px, 17vw, 74px) !important;
+    opacity: 0.62;
+  }
+
+  .hero__pillar, .wedding__pillar, .finale__pillar { opacity: 0.5; }
+  .hero__pillar { translate: -46% 0; }
+  .hero__pillar.pillar--right { translate: 46% 0; }
+
+  /* Garlands: one side only, narrower, hung further out of frame. */
+  .garland { transform-origin: 50% 0; }
+
+  .hero__cluster--near,
+  .hero__garland--right,
+  .story__garland--right,
+  .gallery__garland--right,
+  .journey__garland,
+  .travel__cluster--right,
+  .reception__garland--right,
+  .finale__garland--right { display: none; }
+
+  .hero__garland,
+  .finale__garland,
+  .reception__garland,
+  .story__garland,
+  .gallery__garland { scale: 0.62; opacity: 0.6; }
+
+  .hero__garland--left { left: -3rem; }
+  .finale__garland--left { left: -3rem; }
+
+  .wedding__drape .garland { scale: 0.55; opacity: 0.6; }
+  /* Four of the six strands would crowd the date. */
+  .wedding__drape .garland:nth-child(2),
+  .wedding__drape .garland:nth-child(3),
+  .wedding__drape .garland:nth-child(4),
+  .wedding__drape .garland:nth-child(5) { display: none; }
+
+  /* Flower clusters: corner accents, not carpets. */
+  .cluster { scale: 0.6; }
+  .hero__cluster--left { bottom: -10%; left: -14%; }
+  .hero__cluster--right { bottom: -8%; right: -14%; }
+
+  /* Lamps: one pair, smaller, tucked into the bottom corners. */
+  .hero__lamps { padding-inline: 0; }
+  .hero__lamp { height: 150px; }
+  .wedding__lamp--left, .wedding__lamp--right { display: none; }
+  .wedding__lamp--far-left, .wedding__lamp--far-right { height: 150px; }
+  .finale__lamp, .reception__lamp { height: 160px; }
+
+  /* The clearing behind the names has to work harder over flowers. */
+  .hero__content::before {
+    inset: -14% -30%;
+    background: radial-gradient(
+      ellipse 60% 42% at 50% 46%,
+      color-mix(in srgb, var(--c-navy) 46%, transparent),
+      transparent 76%
+    );
+  }
+
+  .hero__content { padding-top: clamp(2rem, 8vh, 5rem); }
+
+  .finale__rsvp { padding-inline: var(--sp-md); }
+  .finale__date { grid-auto-flow: row; gap: var(--sp-xs); }
+  .finale__rule { width: 60px; }
+
+  .journey__beats { margin-top: 12vh; gap: clamp(4rem, 10vh, 7rem); }
+  .journey__place--destination { margin-top: 12vh; }
+  .journey__lamp { left: 4%; }
+
+  .gallery__plate:nth-child(n) { grid-area: auto / 1 / auto / -1; margin: 0; justify-self: stretch; }
+  .gallery__frame { rotate: calc(var(--plate-tilt, 0deg) * 0.4); width: 100%; }
+
+  .story__beats { gap: var(--sp-xl); }
+  .families__grid { gap: var(--sp-lg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  /* Stillness, not absence: every layer is placed at its finished
+     position and stays there. */
+  .reveal,
+  .hero__gopuram,
+  .hero__pillar,
+  .hero__arch,
+  .hero__lamp,
+  .hero__garland,
+  .hero__cluster,
+  .hero__eyebrow,
+  .hero__names > *,
+  .hero__date,
+  .bridge__tower,
+  .bridge__doorway svg,
+  .bridge__curtain .garland {
+    opacity: 1 !important;
+    translate: 0 0 !important;
+    transform: none !important;
+    filter: none !important;
+  }
+
+  .hero__cluster--near { opacity: 0.5 !important; }
+
+  .arch__bloom { opacity: 1 !important; transform: none !important; }
+  .kolam__line *, .travel__road-line { stroke-dashoffset: 0 !important; }
+  .journey__wire-live { stroke-dashoffset: 0 !important; }
+}
