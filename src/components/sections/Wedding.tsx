@@ -9,6 +9,8 @@ import { Thoranam } from '../scenery/Thoranam';
 import { Kolam } from '../scenery/Kolam';
 import { Petals } from '../scenery/Petals';
 import { Haze } from '../scenery/Haze';
+import { Countdown } from '../ui/Countdown';
+import { CalendarActions } from '../ui/CalendarActions';
 import { useReveal } from '../../hooks/useReveal';
 import { events } from '../../data/wedding';
 
@@ -94,6 +96,14 @@ export function Wedding() {
           {/* Placeholder — replace only when the family confirms. */}
           <p className="wedding__pending-text u-display">{events.wedding.detailsPlaceholder}</p>
           <span className="wedding__rule" aria-hidden="true" />
+        </Reveal>
+
+        <Reveal variant="fade" delay={560} className="wedding__countdown">
+          <Countdown targetISO={events.wedding.dateISO} label="Time remaining until the wedding" />
+          <CalendarActions
+            event={{ title: `${events.wedding.label} — Prithvi Raj & Harshini`, dateISO: events.wedding.dateISO, location: events.wedding.city }}
+            filename="prithvi-harshini-wedding.ics"
+          />
         </Reveal>
 
         <div ref={kolamRef} className="wedding__threshold">

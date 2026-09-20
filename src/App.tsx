@@ -8,6 +8,7 @@ import { Hero } from './components/sections/Hero';
 import { Story } from './components/sections/Story';
 import { Families } from './components/sections/Families';
 import { Journey } from './components/sections/Journey';
+import { Ceremonies } from './components/sections/Ceremonies';
 import { Wedding } from './components/sections/Wedding';
 import { Reception } from './components/sections/Reception';
 import { Travel } from './components/sections/Travel';
@@ -57,8 +58,11 @@ export default function App() {
         <SceneBridge variant="gopuram" from="daylight" to="night" height={16} />
 
         <Journey />
-        {/* back through the doorway, into the mandapam */}
-        <SceneBridge variant="arch" from="night" to="ceremony" height={15} />
+        {/* back into daylight, for a quick page of the invitation itself */}
+        <SceneBridge variant="arch" from="night" to="daylight" height={15} />
+
+        <Ceremonies />
+        <SceneBridge variant="kolam" from="daylight" to="ceremony" height={10} />
 
         <Wedding />
         {/* lamps lit, the light going down */}

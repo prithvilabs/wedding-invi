@@ -6,6 +6,8 @@ import { FlowerCluster } from '../scenery/FlowerCluster';
 import { JasmineGarland } from '../scenery/JasmineGarland';
 import { Bokeh } from '../scenery/Bokeh';
 import { Haze } from '../scenery/Haze';
+import { CalendarActions } from '../ui/CalendarActions';
+import { MapsActions } from '../ui/MapsActions';
 import { useReveal } from '../../hooks/useReveal';
 import { events } from '../../data/wedding';
 
@@ -77,6 +79,18 @@ export function Reception() {
 
         <Reveal variant="fade" delay={460}>
           <p className="reception__pending u-label">{events.reception.detailsPlaceholder}</p>
+        </Reveal>
+
+        <Reveal variant="fade" delay={600} className="reception__actions">
+          <MapsActions query={`${events.reception.venue}, ${events.reception.city}`} />
+          <CalendarActions
+            event={{
+              title: `${events.reception.label} — Prithvi Raj & Harshini`,
+              dateISO: events.reception.dateISO,
+              location: `${events.reception.venue}, ${events.reception.city}`,
+            }}
+            filename="prithvi-harshini-reception.ics"
+          />
         </Reveal>
       </SceneContent>
 

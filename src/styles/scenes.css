@@ -839,6 +839,13 @@
 .wedding__threshold { margin-top: var(--sp-lg); color: var(--c-gold); }
 .wedding__threshold .kolam { position: relative; }
 
+.wedding__countdown {
+  display: grid;
+  justify-items: center;
+  gap: var(--sp-md);
+  margin-top: var(--sp-lg);
+}
+
 /* =============================================================
    RECEPTION
    ============================================================= */
@@ -900,6 +907,13 @@
 }
 
 .reception__pending { color: var(--s-on-dark-faint); margin-top: var(--sp-md); }
+
+.reception__actions {
+  display: grid;
+  justify-items: center;
+  gap: var(--sp-md);
+  margin-top: var(--sp-lg);
+}
 
 /* =============================================================
    TRAVEL

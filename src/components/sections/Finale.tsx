@@ -9,8 +9,11 @@ import { Gopuram } from '../scenery/Gopuram';
 import { Kolam } from '../scenery/Kolam';
 import { Petals } from '../scenery/Petals';
 import { Haze } from '../scenery/Haze';
+import { RsvpForm } from './RsvpForm';
+import { Guestbook } from './Guestbook';
+import { ShowerBlessings } from '../scenery/ShowerBlessings';
 import { useReveal } from '../../hooks/useReveal';
-import { couple, events, finale, gifts, rsvp } from '../../data/wedding';
+import { couple, events, finale, gifts, guestbook, rsvp } from '../../data/wedding';
 
 /**
  * The invitation itself.
@@ -89,18 +92,23 @@ export function Finale() {
           {finale.closing}
         </Reveal>
 
-        {/* RSVP — intentionally not wired up. There is no form here
-            because there is nothing to submit to yet; when there is,
-            it replaces the status line and nothing else moves. */}
+        {/* A working RSVP, honestly scoped: it saves to this device,
+            not to the family — the form itself says so. */}
         <Reveal variant="settle" delay={200} className="finale__rsvp">
           <p className="u-eyebrow finale__rsvp-eyebrow">{rsvp.eyebrow}</p>
           <h3 className="finale__rsvp-title u-display">{rsvp.title}</h3>
-          <p className="finale__rsvp-body">{rsvp.body}</p>
-          <p className="finale__rsvp-status u-label" role="status">
-            {rsvp.status}
-          </p>
-
+          <RsvpForm />
           {gifts.show && <p className="finale__gifts u-serif-body">{gifts.note}</p>}
+        </Reveal>
+
+        <Reveal variant="settle" delay={280} className="finale__guestbook">
+          <p className="u-eyebrow">{guestbook.eyebrow}</p>
+          <h3 className="finale__guestbook-title u-display">{guestbook.title}</h3>
+          <Guestbook />
+        </Reveal>
+
+        <Reveal variant="fade" delay={360}>
+          <ShowerBlessings />
         </Reveal>
 
         <div ref={kolamRef} className="finale__threshold">

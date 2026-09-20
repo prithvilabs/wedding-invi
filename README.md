@@ -22,7 +22,7 @@ All copy, dates, names and placeholders live in two files:
 
 | What | Where |
 | --- | --- |
-| Names, dates, venue, story, families, travel, RSVP, music | `src/data/wedding.ts` |
+| Names, dates, venue, story, families, travel, ceremonies, RSVP, guestbook, music | `src/data/wedding.ts` |
 | Gallery photographs | `src/data/gallery.ts` |
 
 ### Placeholders
@@ -73,11 +73,48 @@ With `src: null` the control hides itself entirely.
 
 ### RSVP
 
-The RSVP section is intentionally inert: there is no form, because there is
-nothing to submit to yet, and no fake confirmation. When a real endpoint
-exists, replace the `finale__rsvp-status` line in
-`src/components/sections/Finale.tsx` with the form component. The surrounding
-section is already sized and styled for it — no other part of the page moves.
+The RSVP form is functional, but honestly scoped: there is no server behind
+it yet, so a reply is validated and saved to the **visitor's own browser**
+(`localStorage`), and the form says so plainly rather than implying it reaches
+the family. Set `rsvp.enabled = false` in `src/data/wedding.ts` to revert to a
+plain "opening soon" placeholder without touching any component.
+
+When a real backend exists, replace the `writeLocal` call in
+`src/components/sections/RsvpForm.tsx` with a real request — the form's
+validation, fields and confirmation screen don't need to change.
+
+### Guestbook
+
+Same honesty rule: blessings are saved to the visitor's own device only —
+there is no shared wall yet, so one guest never sees another's message. The
+component (`src/components/sections/Guestbook.tsx`) says this in its own
+copy. Wire it to a real backend the same way as the RSVP form, by replacing
+`writeLocal`/`readLocal` with real requests.
+
+### Ceremony timeline
+
+`src/data/wedding.ts` exports `ceremonies`, a plain array built from the two
+**confirmed** dates. It is deliberately *not* a breakdown of named rituals
+(Nichayathartham, Muhurtham, Sapthapadi, and so on) — nobody has confirmed
+which of those this couple is holding, or when, and guessing would be exactly
+the kind of fabrication this project avoids everywhere else. Add real entries
+in the same shape as soon as the family confirms them; the timeline renders
+however many it is given.
+
+### Calendar and maps
+
+"Add to calendar" (Google Calendar link + `.ics` download) and "Get
+directions" (Google/Apple Maps) are built from `src/utils/calendar.ts` and
+the venue text already in `events` — no coordinates are hardcoded, since none
+have been supplied. Update the venue text and both stay correct.
+
+### Shower blessings
+
+A one-off burst of petals and akshata at the very end, drawn from the same
+flower vocabulary as the rest of the site. It never plays on its own — only
+on the button press — and a soft synthesised bell chime (see
+`src/utils/chime.ts`, no recorded audio, no autoplay) plays alongside it and
+on a saved RSVP or a posted blessing.
 
 ---
 
@@ -134,6 +171,19 @@ tower, a doorway, a curtain of jasmine, a threshold kolam.
 Scenes taller than the screen put their architecture on a `stage` (a sticky,
 viewport-high frame), so the room stays around the visitor instead of hanging
 its ceiling above them and standing its lamps below them.
+
+### The interactive pieces
+
+Everything a visitor types back into the site — the RSVP form, the guestbook,
+the shower-blessings burst — lives in `src/components/sections/RsvpForm.tsx`,
+`Guestbook.tsx` and `src/components/scenery/ShowerBlessings.tsx`, styled from
+`src/styles/interactive.css`. These use **Framer Motion** for their reveals
+and exits (a conditional field group opening, a blessing entering the list, a
+petal falling) — the one part of the site where a general-purpose animation
+library earns its place, rather than the bespoke scroll engine that drives
+the parallax and lighting above. That engine stays hand-built because it was
+measured and tuned for a specific cost budget across forty-odd scenery
+layers; Framer Motion doesn't touch it.
 
 ---
 

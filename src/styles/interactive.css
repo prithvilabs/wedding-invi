@@ -1,0 +1,390 @@
+/* =============================================================
+   INTERACTIVE
+   The handful of controls a visitor actually operates: the
+   countdown, calendar and map actions, the RSVP form, the
+   guestbook, and the shower-blessings burst. Everything here still
+   draws from the same token system as the rest of the venue —
+   these are not a different design language bolted on, just the
+   one place where a visitor types something back.
+   ============================================================= */
+
+/* ---------- Countdown ---------- */
+
+.countdown__grid {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(0.75rem, 3vw, 1.75rem);
+  margin: 0;
+}
+
+.countdown__unit {
+  display: grid;
+  justify-items: center;
+  gap: var(--sp-2xs);
+  min-width: 3.2em;
+  padding: var(--sp-sm) var(--sp-xs);
+  background: color-mix(in srgb, var(--c-ivory) 55%, transparent);
+  border: 1px solid var(--s-rule);
+  border-radius: var(--r-sm);
+}
+
+.countdown__value {
+  font-size: var(--t-h3);
+  color: var(--c-navy);
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+}
+
+.countdown__label {
+  color: var(--s-ink-faint);
+  font-size: 0.62rem;
+}
+
+.countdown__arrived {
+  font-size: var(--t-h3);
+  color: var(--c-gold-deep);
+  font-style: italic;
+}
+
+/* ---------- Calendar / maps actions ---------- */
+
+.calendar-actions,
+.maps-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: var(--sp-md);
+}
+
+.calendar-actions__link,
+.maps-actions__link {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2xs);
+  padding: 0.6rem 1.3rem;
+  border: 1px solid var(--s-rule);
+  border-radius: var(--r-pill);
+  font-family: var(--f-sans);
+  font-size: var(--t-eyebrow);
+  letter-spacing: var(--ls-label);
+  text-transform: uppercase;
+  color: var(--c-navy);
+  background: color-mix(in srgb, var(--c-ivory) 40%, transparent);
+  transition: border-color var(--d-quick) var(--e-out), background-color var(--d-quick) var(--e-out);
+}
+
+.scene--evening .calendar-actions__link,
+.scene--evening .maps-actions__link,
+.scene--night .calendar-actions__link,
+.scene--night .maps-actions__link {
+  color: var(--c-ivory);
+  border-color: color-mix(in srgb, var(--c-ivory) 40%, transparent);
+}
+
+.calendar-actions__link:hover,
+.maps-actions__link:hover {
+  border-color: var(--c-gold);
+  background: color-mix(in srgb, var(--c-gold-soft) 22%, transparent);
+}
+
+/* ---------- Ceremonies (the "at a glance" scene) ---------- */
+
+.ceremonies { padding-block: calc(var(--sp-section) * 0.85); }
+
+.ceremonies__cluster { opacity: 0.55; }
+.ceremonies__cluster--left { bottom: 2%; left: -2%; }
+.ceremonies__cluster--right { top: 4%; right: -1%; }
+
+.ceremonies__content {
+  max-width: 44rem;
+  display: grid;
+  justify-items: center;
+  gap: var(--sp-xl);
+  text-align: center;
+}
+
+.ceremonies__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--sp-lg);
+  width: 100%;
+}
+
+.ceremonies__item {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: var(--sp-md);
+  align-items: baseline;
+  text-align: left;
+  padding-bottom: var(--sp-lg);
+  border-bottom: 1px solid var(--s-rule);
+}
+
+.ceremonies__item:last-child { border-bottom: none; padding-bottom: 0; }
+
+.ceremonies__number {
+  font-size: var(--t-h2);
+  color: var(--c-gold);
+  opacity: 0.6;
+  line-height: 1;
+}
+
+.ceremonies__body { display: grid; gap: var(--sp-2xs); }
+.ceremonies__label { color: var(--c-gold-deep); }
+.ceremonies__date { font-size: var(--t-h3); color: var(--c-navy); }
+.ceremonies__place { color: var(--s-ink-soft); }
+.ceremonies__detail { color: var(--s-ink-faint); font-style: italic; margin-top: var(--sp-2xs); }
+.ceremonies__note { color: var(--s-ink-faint); max-width: 40ch; }
+
+/* ---------- RSVP form ---------- */
+
+.rsvp-form {
+  display: grid;
+  gap: var(--sp-md);
+  width: 100%;
+  max-width: 28rem;
+  text-align: left;
+}
+
+.rsvp-form__intro {
+  font-size: var(--t-body);
+  color: var(--s-ink-soft);
+  text-align: center;
+}
+
+.rsvp-form__field { display: grid; gap: var(--sp-2xs); }
+
+.rsvp-form__field label,
+.rsvp-form__field legend {
+  color: var(--c-gold-deep);
+}
+
+.rsvp-form input[type='text'],
+.rsvp-form input[type='number'],
+.rsvp-form select {
+  font: inherit;
+  padding: 0.6rem 0.8rem;
+  border: 1px solid var(--s-rule);
+  border-radius: var(--r-sm);
+  background: color-mix(in srgb, var(--c-ivory) 70%, transparent);
+  color: var(--c-navy);
+}
+
+.rsvp-form input:focus-visible,
+.rsvp-form select:focus-visible,
+.rsvp-form textarea:focus-visible {
+  outline: 2px solid var(--c-gold);
+  outline-offset: 1px;
+}
+
+.rsvp-form__radio-row,
+.rsvp-form__checkbox-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-md);
+}
+
+.rsvp-form__radio,
+.rsvp-form__checkbox {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2xs);
+  font-size: var(--t-body);
+  color: var(--s-ink-soft);
+}
+
+.rsvp-form__conditional {
+  display: grid;
+  gap: var(--sp-md);
+  overflow: hidden;
+}
+
+.rsvp-form__error,
+.guestbook__error {
+  color: var(--c-kanakambaram);
+  font-size: var(--t-eyebrow);
+}
+
+.rsvp-form__submit,
+.guestbook__submit {
+  justify-self: center;
+  padding: 0.7rem 2rem;
+  border-radius: var(--r-pill);
+  border: 1px solid var(--c-gold);
+  background: color-mix(in srgb, var(--c-gold-soft) 30%, transparent);
+  color: var(--c-navy);
+  font-family: var(--f-sans);
+  letter-spacing: var(--ls-label);
+  text-transform: uppercase;
+  font-size: var(--t-eyebrow);
+  transition: background-color var(--d-quick) var(--e-out);
+}
+
+.rsvp-form__submit:hover,
+.guestbook__submit:hover {
+  background: color-mix(in srgb, var(--c-gold-soft) 55%, transparent);
+}
+
+.rsvp-form__disclaimer,
+.guestbook__disclaimer {
+  color: var(--s-ink-faint);
+  text-align: center;
+  font-style: italic;
+  max-width: 34ch;
+  margin-inline: auto;
+}
+
+.rsvp-form--summary {
+  text-align: center;
+  justify-items: center;
+}
+
+.rsvp-form__saved-title { font-size: var(--t-h3); color: var(--c-navy); }
+.rsvp-form__saved-body { color: var(--s-ink-soft); }
+
+.rsvp-form__summary {
+  display: grid;
+  gap: var(--sp-sm);
+  margin: 0;
+  text-align: left;
+  width: 100%;
+}
+
+.rsvp-form__summary dt { color: var(--c-gold-deep); }
+.rsvp-form__summary dd { margin: 0; color: var(--s-ink-soft); }
+
+.rsvp-form__edit {
+  justify-self: center;
+  padding: 0.5rem 1.4rem;
+  border-radius: var(--r-pill);
+  border: 1px solid var(--s-rule);
+  color: var(--c-navy);
+  font-size: var(--t-eyebrow);
+  letter-spacing: var(--ls-label);
+  text-transform: uppercase;
+}
+
+/* ---------- Guestbook ---------- */
+
+.guestbook {
+  display: grid;
+  gap: var(--sp-lg);
+  width: 100%;
+  max-width: 30rem;
+}
+
+.guestbook__form {
+  display: grid;
+  gap: var(--sp-md);
+  text-align: left;
+}
+
+.guestbook__field { display: grid; gap: var(--sp-2xs); }
+.guestbook__field label { color: var(--c-gold-deep); }
+
+.guestbook textarea {
+  font: inherit;
+  padding: 0.7rem 0.9rem;
+  border: 1px solid var(--s-rule);
+  border-radius: var(--r-sm);
+  background: color-mix(in srgb, var(--c-ivory) 70%, transparent);
+  color: var(--c-navy);
+  resize: vertical;
+}
+
+.guestbook__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--sp-md);
+  max-height: 22rem;
+  overflow-y: auto;
+}
+
+.guestbook__item {
+  padding: var(--sp-md);
+  border: 1px solid var(--s-rule);
+  border-radius: var(--r-sm);
+  background: color-mix(in srgb, var(--c-ivory) 45%, transparent);
+  text-align: left;
+}
+
+.guestbook__message {
+  color: var(--c-navy);
+  font-style: italic;
+}
+
+.guestbook__meta {
+  margin-top: var(--sp-2xs);
+  color: var(--s-ink-faint);
+}
+
+.guestbook__empty {
+  color: var(--s-ink-faint);
+  font-style: italic;
+  text-align: center;
+  list-style: none;
+}
+
+/* ---------- Shower blessings ---------- */
+
+.shower {
+  position: relative;
+  display: grid;
+  justify-items: center;
+  padding-top: var(--sp-md);
+}
+
+.shower__button {
+  padding: 0.75rem 2.2rem;
+  border-radius: var(--r-pill);
+  border: 1px solid var(--c-gold);
+  background: color-mix(in srgb, var(--c-flame) 12%, transparent);
+  color: var(--c-gold-deep);
+  font-family: var(--f-sans);
+  letter-spacing: var(--ls-label);
+  text-transform: uppercase;
+  font-size: var(--t-eyebrow);
+  box-shadow: var(--sh-glow-warm);
+  transition: transform var(--d-quick) var(--e-out);
+}
+
+.shower__button:hover { transform: translateY(-1px); }
+.shower__button:active { transform: translateY(0); }
+
+.shower__field {
+  position: absolute;
+  inset: -20px -40vw 0;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.shower__piece {
+  position: absolute;
+  top: 0;
+}
+
+.shower__piece--akshata {
+  border-radius: 40%;
+}
+
+.shower__piece--petal {
+  border-radius: 60% 40% 55% 45% / 70% 60% 40% 30%;
+}
+
+.shower__piece--gold { background: linear-gradient(135deg, var(--c-gold-soft), var(--c-gold)); }
+.shower__piece--ivory { background: linear-gradient(140deg, var(--c-jasmine), var(--c-cream)); }
+.shower__piece--rose { background: linear-gradient(140deg, var(--c-jasmine), var(--c-kanakambaram)); opacity: 0.85; }
+.shower__piece--blue { background: linear-gradient(140deg, var(--c-blue-mist), var(--c-blue-powder)); }
+
+@media (max-width: 599px) {
+  .ceremonies__item { grid-template-columns: auto 1fr; gap: var(--sp-sm); }
+  .ceremonies__number { font-size: var(--t-h3); }
+  .rsvp-form,
+  .guestbook { max-width: 100%; }
+}

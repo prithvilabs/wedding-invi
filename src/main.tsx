@@ -4,6 +4,7 @@ import App from './App';
 import './styles/base.css';
 import './styles/scenery.css';
 import './styles/scenes.css';
+import './styles/interactive.css';
 import './styles/chrome.css';
 
 const container = document.getElementById('root');
